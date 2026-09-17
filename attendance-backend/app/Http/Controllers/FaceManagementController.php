@@ -19,6 +19,7 @@ class FaceManagementController extends Controller
             'stores' => Store::query()->count(),
             'employees' => Employee::query()->count(),
             'linked' => Employee::query()->whereNotNull('face_key')->count(),
+            'no_face' => Employee::query()->whereNull('face_key')->count(),
         ];
 
         return view('wajah', ['stats' => $stats]);
@@ -67,15 +68,19 @@ class FaceManagementController extends Controller
         );
     }
 
-    /** GET /kelola-wajah/karyawan — daftar karyawan (tanpa API key). */
+    /** GET /kelola-wajah/karyawan — daftar karyawan + toko + kota (tanpa API key). */
     public function employees(): JsonResponse
     {
         return response()->json(
-            Employee::query()->with('store:id,name')->orderBy('name')->get(['id', 'name', 'employee_code', 'face_key', 'store_id'])
+            Employee::query()
+                ->with('store.city:id,name')
+                ->orderBy('store_id')
+                ->orderBy('name')
+                ->get(['id', 'name', 'employee_code', 'face_key', 'store_id'])
         );
     }
 
-    /** POST /kelola-wajah/karyawan — buat karyawan baru. */
+    /** POST /kelola-wajah/karyawan — buat karyawan baru (dedupe per toko+nama). */
     public function createEmployee(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -84,14 +89,29 @@ class FaceManagementController extends Controller
             'store_id' => 'nullable|integer|exists:stores,id',
         ]);
 
+        $name = trim($data['name']);
+
+        // dedupe: nama yang sama di toko yang sama → jangan bikin baris baru
+        $existing = Employee::where('store_id', $data['store_id'] ?? null)
+            ->whereRaw('lower(name) = ?', [mb_strtolower($name)])
+            ->first();
+        if ($existing !== null) {
+            return response()->json([
+                'ok' => true,
+                'employee' => $existing->load('store.city'),
+                'existing' => true,
+                'message' => 'Karyawan ini sudah terdaftar di toko tersebut.',
+            ]);
+        }
+
         $employee = Employee::create([
-            'name' => trim($data['name']),
+            'name' => $name,
             'employee_code' => $data['employee_code'] ?? null,
             'active' => true,
             'store_id' => $data['store_id'] ?? null,
         ]);
 
-                return response()->json(['ok' => true, 'employee' => $employee->load('store')], 201);
+        return response()->json(['ok' => true, 'employee' => $employee->load('store.city')], 201);
     }
 
     /**
@@ -112,7 +132,12 @@ class FaceManagementController extends Controller
             return response()->json(['ok' => false, 'message' => 'Kirim foto lewat input "photo" atau kolom "image" base64.'], 422);
         }
 
-        $engine = $this->engineEnroll($employee->name, $bytes);
+        $engine = $this->engineEnroll(
+            // nama unik di engine: "nama — toko" (engine dedupe by nama; dua karyawan
+            // dengan nama sama di toko beda harus punya slot wajah masing-masing)
+            trim($employee->name.' — '.($employee->store?->name ?? 'Tanpa Toko')),
+            $bytes
+        );
         if (! ($engine['ok'] ?? false)) return response()->json($engine, $engine['status'] ?? 502);
 
         $face = $engine['body'];

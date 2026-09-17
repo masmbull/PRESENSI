@@ -26,18 +26,30 @@ class EmployeeController extends Controller
         );
     }
 
-    /** POST /api/employees — daftarkan karyawan (opsional isi face_key dari engine). */
+    /** POST /api/employees — daftarkan karyawan (dedupe per toko+nama). */
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
             'name' => 'required|string|max:120',
+            'store_id' => 'nullable|integer|exists:stores,id',
             'employee_code' => 'nullable|string|max:40|unique:employees,employee_code',
             'face_key' => 'nullable|string|max:64|unique:employees,face_key',
             'active' => 'nullable|boolean',
         ]);
 
+        $name = trim($data['name']);
+
+        // dedupe: nama sama di toko yang sama → balikin baris yang udah ada
+        $existing = Employee::where('store_id', $data['store_id'] ?? null)
+            ->whereRaw('lower(name) = ?', [mb_strtolower($name)])
+            ->first();
+        if ($existing !== null) {
+            return response()->json($existing->load('store.city'));
+        }
+
         $employee = Employee::create([
-            'name' => trim($data['name']),
+            'name' => $name,
+            'store_id' => $data['store_id'] ?? null,
             'employee_code' => $data['employee_code'] ?? null,
             'face_key' => $data['face_key'] ?? null,
             'active' => $data['active'] ?? true,
@@ -57,11 +69,13 @@ class EmployeeController extends Controller
 
         $rows = [];
         foreach ($data['faces'] as $face) {
-            $name = trim($face['name']);
+            // nama engine = "nama — toko" (biar unik) → buang sufiks toko dulu
+            $clean = trim(explode(' — ', trim($face['name']))[0]);
+            $name = mb_substr($clean !== '' ? $clean : trim($face['name']), 0, 120);
 
             // Match karyawan yang udah ada by nama dulu (biar gak dobel),
             // lalu ikat face_key engine-nya kalau masih bebas.
-            $employee = Employee::whereRaw('lower(name) = ?', [strtolower($name)])->first();
+            $employee = Employee::whereRaw('lower(name) = ?', [mb_strtolower($name)])->first();
             if ($employee !== null
                 && ! Employee::where('face_key', $face['id'])->where('id', '!=', $employee->id)->exists()) {
                 $employee->update(['face_key' => $face['id']]);

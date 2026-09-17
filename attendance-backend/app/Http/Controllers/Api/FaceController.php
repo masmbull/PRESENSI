@@ -61,11 +61,18 @@ class FaceController extends Controller
         }
 
         $best = $accepted->first();
+        $faceKey = $best['match']['id'] ?? null;
+
+        // nama kanonik dari DB (engine pakai "nama — toko" biar unik) —
+        // tampil di popup absen jadi "Halo Ayu Kartika!", bukan "nama — toko"
+        $canonical = $faceKey !== null
+            ? Employee::where('face_key', $faceKey)->first()?->name
+            : null;
 
         return response()->json([
             'ok' => true,
-            'face_key' => $best['match']['id'] ?? null,
-            'name' => $best['match']['name'] ?? null,
+            'face_key' => $faceKey,
+            'name' => $canonical ?? ($best['match']['name'] ?? null),
             'cosine' => $best['match']['cosine'] ?? null,
             'liveness' => $best['liveness']['live_prob'] ?? null,
         ]);
