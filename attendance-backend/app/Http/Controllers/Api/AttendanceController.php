@@ -20,7 +20,7 @@ class AttendanceController extends Controller
             'lat' => 'required|numeric|between:-90,90',
             'lon' => 'required|numeric|between:-180,180',
             'acc' => 'nullable|numeric|min:0',
-            'device' => 'nullable|string|max:120',
+            'device' => 'nullable|string|max:255',
             'force' => 'nullable|boolean',
             // field face — kepakai kalau FACEID_ENABLED=true
             'face_key' => 'nullable|string|max:64',
@@ -30,6 +30,14 @@ class AttendanceController extends Controller
             'thumb' => 'nullable|string',
             'attrs' => 'nullable|array',
         ]);
+
+        // Normalisasi device (UA bisa > 120 char) + tangkap IP asli klien.
+        // Urutan prioritas: CF-Connecting-IP (di-set edge Cloudflare, gak bisa
+        // di-spoof klien) → X-Real-IP → request()->ip() (butuh TrustProxies).
+        $data['device'] = isset($data['device']) ? mb_substr($data['device'], 0, 120) : null;
+        $clientIp = $request->header('CF-Connecting-IP')
+            ?? $request->header('X-Real-IP')
+            ?? $request->ip();
 
         $employee = Employee::with('store')->find($data['employee_id']);
         $type = $data['type'] ?? 'masuk';
@@ -102,6 +110,7 @@ class AttendanceController extends Controller
             'distance_m' => round($distance, 1),
             'within_radius' => true,
             'device' => $data['device'] ?? null,
+            'ip' => $clientIp,
             'face_key' => $data['face_key'] ?? null,
             'cosine' => $data['cosine'] ?? null,
             'liveness' => $data['liveness'] ?? null,

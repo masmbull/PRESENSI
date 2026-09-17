@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\FaceController;
 use App\Http\Controllers\Api\MasterController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('api.key')->group(function () {
@@ -15,6 +16,15 @@ Route::middleware('api.key')->group(function () {
         'face_id' => (bool) config('faceid.enabled'),
         'radius_m' => (int) config('faceid.radius'),
     ]));
+
+    // IP klien yang terlihat server (chip "IP kamu" di halaman absen).
+    Route::get('/my-ip', fn (Request $request) => response()->json([
+        'ok' => true,
+        'ip' => $request->header('CF-Connecting-IP')
+            ?? $request->header('X-Real-IP')
+            ?? $request->ip(),
+    ]));
+
 
     // verifikasi wajah (proxy ke engine MITO)
     Route::post('/face/verify', [FaceController::class, 'verify']);

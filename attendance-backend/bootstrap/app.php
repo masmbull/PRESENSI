@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Semua request datang lewat Cloudflare → nginx; tanpa ini Laravel cuma
+        // melihat IP edge/proxy. Catatan keamanan: X-Forwarded-For bisa menyisip
+        // nilai spoof-an klien, jadi IP klien yang tepercaya dibaca dari header
+        // CF-Connecting-IP (di-set edge Cloudflare) di AttendanceController.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'api.key' => \App\Http\Middleware\ApiKey::class,
             'face.admin' => \App\Http\Middleware\FaceAdmin::class,
