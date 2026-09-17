@@ -1,0 +1,31 @@
+# ---------- runtime: cert & log ----------
+certs/
+logs/
+__pycache__/
+*.pyc
+*.log
+*.err
+.venv/
+_venv_test/
+
+# ---------- data biometrik & runtime - JANGAN pernah commit ----------
+# (berisi foto/embedding wajah & riwayat absensi orang asli)
+pro_faces.json
+attendance.json
+faces.json
+samples/
+
+# ---------- model ONNX ikut repo (~52MB) — biar clone langsung jalan ----------
+# jangan tambahin model lain yang >100MB (limit per-file GitHub)
+
+# ---------- tool/agent lokal ----------
+.kilo/
+.vscode/
+.idea/
+Thumbs.db
+
+# ---------- attendance-backend (Laravel) ----------
+attendance-backend/.env.backup
+attendance-backend/storage/logs/
+attendance-backend/storage/framework/cache/data/
+attendance-backend/resources/views/_prefix*.tmp

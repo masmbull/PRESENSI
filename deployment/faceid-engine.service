@@ -1,0 +1,18 @@
+[Unit]
+Description=MITO FaceID Engine (FastAPI + ONNX, localhost:8090)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/presensi
+ExecStart=/var/www/presensi/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8090
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
