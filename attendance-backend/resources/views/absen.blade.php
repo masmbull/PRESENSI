@@ -75,6 +75,10 @@ h2{font-size:11px;margin:0 0 12px;color:var(--dim);font-weight:700;text-transfor
 .dd-chev{flex:none;color:var(--dim);transition:transform .25s,color .25s}
 .dd.open .dd-chev{transform:rotate(180deg);color:var(--sky)}
 .dd-panel{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:400;border-radius:16px;border:1px solid rgba(148,178,214,.22);background:rgba(9,15,25,.94);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);box-shadow:0 26px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07);overflow:hidden;transform-origin:top center;transform:scale(.97) translateY(-4px);opacity:0;transition:transform .16s ease,opacity .16s ease}
+/* panel dipindah ke <body> saat kebuka (position:fixed) supaya gak ke-clip / ketutupan
+   card lain yang punya backdrop-filter; left/width/top diisi dari JS (place()) */
+.dd-panel.floating{position:fixed;right:auto;z-index:1600}
+.dd-panel.up{top:auto;bottom:calc(100% + 8px);transform-origin:bottom center;transform:scale(.97) translateY(4px)}
 .dd-panel.in{transform:none;opacity:1}
 .dd-panel::before{content:"";position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.75),transparent);z-index:1}
 .dd-searchwrap{padding:10px 10px 8px;border-bottom:1px solid var(--line)}
@@ -436,17 +440,52 @@ function makeDD(id, opts) {
     }
   }
 
+  // panel "floating": dipindah ke <body> + position:fixed supaya gak ke-clip/ketutupan
+  // card lain (card pakai backdrop-filter = stacking context). place() hitung posisi,
+  // arah buka (atas/bawah), dan tinggi list maksimal yang muat di layar.
+  function place() {
+    if (!open) return;
+    const bar = document.querySelector(".actionbar");
+    const barH = bar ? bar.offsetHeight : 0; // actionbar fixed di bawah
+    const r = btn.getBoundingClientRect();
+    const below = window.innerHeight - barH - r.bottom - 14;
+    const above = r.top - 14;
+    const useUp = below < 240 && above > below;
+    panel.classList.toggle("up", useUp);
+    const swH = sw.style.display === "none" ? 0 : sw.offsetHeight;
+    list.style.maxHeight = Math.max(160, Math.min(340, (useUp ? above : below) - swH - 26)) + "px";
+    if (panel.classList.contains("floating")) {
+      panel.style.left = Math.round(r.left) + "px";
+      panel.style.width = Math.round(r.width) + "px";
+      if (useUp) {
+        panel.style.top = "auto";
+        panel.style.bottom = Math.round(window.innerHeight - r.top + 8) + "px";
+      } else {
+        panel.style.bottom = "auto";
+        panel.style.top = Math.round(r.bottom + 8) + "px";
+      }
+    }
+  }
+
   function openPanel() {
     if (disabled || open) return;
     closeAllDD(api);
     open = true; hl = -1; view = null;
     search.value = "";
     panel.hidden = false;
+    panel.classList.add("floating");
+    if (panel.parentNode !== document.body) document.body.appendChild(panel);
     root.classList.add("open");
-    requestAnimationFrame(() => panel.classList.add("in"));
     renderList();
-    if (items.length >= 8) setTimeout(() => search.focus(), 60);
+    requestAnimationFrame(() => { place(); panel.classList.add("in"); });
+    if (items.length >= 8) {
+      // preventScroll: fokus jangan bikin halaman auto-scroll (bikin panel lari ke luar layar)
+      setTimeout(() => { try { search.focus({ preventScroll: true }); } catch (e) { search.focus(); } place(); }, 60);
+    }
+    setTimeout(place, 300); // jaga-jaga kalau layout masih geser (font/gambar telat)
     document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, { passive: true });
   }
 
   function _close() {
@@ -454,8 +493,16 @@ function makeDD(id, opts) {
     open = false;
     root.classList.remove("open");
     panel.classList.remove("in");
-    setTimeout(() => { panel.hidden = true; }, 160);
+    setTimeout(() => {
+      panel.hidden = true;
+      panel.classList.remove("up", "floating");
+      panel.style.left = panel.style.width = panel.style.top = panel.style.bottom = "";
+      list.style.maxHeight = "";
+      if (panel.parentNode !== root) root.appendChild(panel); // balikin ke card-nya
+    }, 160);
     document.removeEventListener("keydown", onKey);
+    window.removeEventListener("resize", place);
+    window.removeEventListener("scroll", place);
   }
 
   function pick(it) {
@@ -474,7 +521,7 @@ function makeDD(id, opts) {
     hl = -1;
     renderList();
   });
-  document.addEventListener("click", (e) => { if (open && !root.contains(e.target)) _close(); });
+  document.addEventListener("click", (e) => { if (open && !root.contains(e.target) && !panel.contains(e.target)) _close(); });
 
   Object.assign(api, {
     get value() { return value; },
