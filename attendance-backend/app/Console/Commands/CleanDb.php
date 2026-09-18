@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class CleanDb extends Command
 {
-    protected $signature = 'db:clean';
+    protected $signature = 'db:clean {--force : tanpa konfirmasi (opsi kompatibilitas, command ini idempoten)}';
 
     protected $description = 'Bersihkan master data: trim nama, merge varian kota hasil scrape, gabung karyawan duplikat per toko.';
 

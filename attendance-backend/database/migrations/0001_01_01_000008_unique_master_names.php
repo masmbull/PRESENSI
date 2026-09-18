@@ -12,16 +12,22 @@ return new class extends Migration
         // - nama kota unik
         // - nama toko unik per kota
         // - nama karyawan unik per toko (store_id NULL boleh berulang)
-        Schema::table('cities', function (Blueprint $table) {
-            $table->unique('name');
-        });
+        // Idempotent: aman di-re-run (SQLite DDL gak transactional per schema() call).
+        $this->ensureUnique('cities', ['name']);
+        $this->ensureUnique('stores', ['city_id', 'name']);
+        $this->ensureUnique('employees', ['store_id', 'name']);
+    }
 
-        Schema::table('stores', function (Blueprint $table) {
-            $table->unique(['city_id', 'name']);
-        });
+    private function ensureUnique(string $table, array $columns): void
+    {
+        $index = $table.'_'.implode('_', $columns).'_unique';
 
-        Schema::table('employees', function (Blueprint $table) {
-            $table->unique(['store_id', 'name']);
+        $existing = collect(Schema::getIndexes($table))->pluck('name');
+        if ($existing->contains($index)) {
+            return;
+        }
+        Schema::table($table, function (Blueprint $t) use ($columns) {
+            $t->unique($columns);
         });
     }
 

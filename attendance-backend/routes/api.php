@@ -33,6 +33,7 @@ Route::middleware('api.key')->group(function () {
     Route::get('/cities', [MasterController::class, 'cities']);
     Route::get('/stores', [MasterController::class, 'stores']);
     Route::get('/employees', [EmployeeController::class, 'index']);
+    Route::get('/employees/no-face', [EmployeeController::class, 'noFace']);
 
     // ---------- karyawan ----------
     Route::post('/employees', [EmployeeController::class, 'store']);

@@ -26,6 +26,18 @@ class EmployeeController extends Controller
         );
     }
 
+    /** GET /api/employees/no-face — karyawan yang belum punya wajah (cek admin). */
+    public function noFace(): JsonResponse
+    {
+        return response()->json(
+            Employee::query()
+                ->whereNull('face_key')
+                ->with('store:id,name,city_id')
+                ->orderBy('name')
+                ->get(['id', 'name', 'employee_code', 'store_id'])
+        );
+    }
+
     /** POST /api/employees — daftarkan karyawan (dedupe per toko+nama). */
     public function store(Request $request): JsonResponse
     {

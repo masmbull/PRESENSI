@@ -2,694 +2,652 @@
   {
     "store": "NUANSA BALIKPAPAN",
     "city": "BALIKPAPAN",
-    "lat": -1.2694616,
-    "lon": 116.8543264,
-    "address": "BALIKPAPAN, Indonesia"
+    "lat": -1.2750029,
+    "lon": 116.8459639,
+    "address": "Toko Nuansa, Jalan Mayjen Sutoyo, Klandasan Ilir, Balikpapan Kota, Balikpapan, Kalimantan Timur, 76121, Indonesia"
   },
   {
     "store": "NUANSA BALIKPAPAN KILO",
     "city": "BALIKPAPAN",
     "lat": -1.2694616,
     "lon": 116.8543264,
-    "address": "BALIKPAPAN, Indonesia"
+    "address": "BALIKPAPAN, Indonesia (fallback by city)"
   },
   {
     "store": "SURYA JAYA BALIKPAPAN",
     "city": "BALIKPAPAN",
-    "lat": -1.2694616,
-    "lon": 116.8543264,
-    "address": "BALIKPAPAN, Indonesia"
+    "lat": -1.2415673,
+    "lon": 116.8375072,
+    "address": "Bengkel Surya Jaya Motor, Jalan Soekarno-Hatta, Karang Rejo, Balikpapan Tengah, Balikpapan, Kalimantan Timur, 76125, Indonesia"
   },
   {
     "store": "TOKO GYS JAYA",
     "city": "BALIKPAPAN",
-    "lat": -1.2694616,
-    "lon": 116.8543264,
-    "address": "BALIKPAPAN, Indonesia"
+    "lat": -1.2194069,
+    "lon": 116.8615359,
+    "address": "Toko Gys Jaya, Jalan M.T. Haryono, Graha Indah, Balikpapan Utara, Balikpapan, Kalimantan Timur, 76126, Indonesia"
   },
   {
     "store": "MUTIARA SUPER KITCHEN UJUNG BERUNG",
     "city": "BANDUNG",
-    "lat": -6.914744,
-    "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "lat": -6.9121621,
+    "lon": 107.6928586,
+    "address": "Mutiara, Jalan Abdul Haris Nasution, Cigending, Ujungberung, Kota Bandung, Jawa Barat, 45474, Indonesia"
   },
   {
     "store": "BLIBLI ELEKTRONIK MOCH TOHA",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "HARTONO",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "LOGIN MEGASTORE (ABC)",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "MUTIARA SUPER KITCHEN",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "STEIN HARTONO",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO PANTES AGUNG (ONLINE)",
     "city": "BANDUNG",
     "lat": -6.914744,
     "lon": 107.60981,
-    "address": "BANDUNG, Indonesia"
+    "address": "BANDUNG, Indonesia (fallback by city)"
   },
   {
     "store": "MITO - SALES B2B",
     "city": "BANGKA",
     "lat": -2.17,
     "lon": 106.12,
-    "address": "BANGKA, Indonesia"
+    "address": "BANGKA, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA MARTAPURA",
     "city": "BANJAR BARU",
     "lat": -3.442,
     "lon": 114.842,
-    "address": "BANJAR BARU, Indonesia"
+    "address": "BANJAR BARU, Indonesia (fallback by city)"
   },
   {
     "store": "CENTRAL PLASTIK PALANGKARAYA",
     "city": "BANJARMASIN",
     "lat": -3.318,
     "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
+    "address": "BANJARMASIN, Indonesia (fallback by city)"
   },
   {
     "store": "GOLDEN 10",
     "city": "BANJARMASIN",
     "lat": -3.318,
     "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
+    "address": "BANJARMASIN, Indonesia (fallback by city)"
   },
   {
     "store": "PONDOK ELEKTRONIK",
     "city": "BANJARMASIN",
     "lat": -3.318,
     "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
+    "address": "BANJARMASIN, Indonesia (fallback by city)"
   },
   {
-    "store": "PONDOK ELEKTRONIK",
+    "store": "POS ELEKTRONIK",
     "city": "BANJARMASIN",
     "lat": -3.318,
     "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
+    "address": "BANJARMASIN, Indonesia (fallback by city)"
   },
   {
     "store": "PONDOK ELEKTRONIK BANJARBARU",
     "city": "BANJARMASIN",
     "lat": -3.318,
     "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
-  },
-  {
-    "store": "POS ELEKTRONIK",
-    "city": "BANJARMASIN",
-    "lat": -3.318,
-    "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
-  },
-  {
-    "store": "POS ELEKTRONIK",
-    "city": "BANJARMASIN",
-    "lat": -3.318,
-    "lon": 114.594,
-    "address": "BANJARMASIN, Indonesia"
+    "address": "BANJARMASIN, Indonesia (fallback by city)"
   },
   {
     "store": "DEPO PELITA",
     "city": "BANYUMAS",
     "lat": -7.46,
     "lon": 109.287,
-    "address": "BANYUMAS, Indonesia"
+    "address": "BANYUMAS, Indonesia (fallback by city)"
   },
   {
     "store": "BARES",
     "city": "BANYUWANGI",
     "lat": -8.219,
     "lon": 114.369,
-    "address": "BANYUWANGI, Indonesia"
+    "address": "BANYUWANGI, Indonesia (fallback by city)"
   },
   {
     "store": "BARES ROGOJAMPI",
     "city": "BANYUWANGI",
     "lat": -8.219,
     "lon": 114.369,
-    "address": "BANYUWANGI, Indonesia"
+    "address": "BANYUWANGI, Indonesia (fallback by city)"
   },
   {
     "store": "JACKSON'S HOMEWARE MARKET",
     "city": "BATAM",
     "lat": 1.13,
     "lon": 104.051,
-    "address": "BATAM, Indonesia"
+    "address": "BATAM, Indonesia (fallback by city)"
   },
   {
     "store": "UNIVERSAL PASIR PUTIH",
     "city": "BATAM",
     "lat": 1.13,
     "lon": 104.051,
-    "address": "BATAM, Indonesia"
+    "address": "BATAM, Indonesia (fallback by city)"
   },
   {
     "store": "TOP 100 SWALAYAN",
     "city": "BATU",
     "lat": -7.866,
     "lon": 112.534,
-    "address": "BATU, Indonesia"
+    "address": "BATU, Indonesia (fallback by city)"
   },
   {
     "store": "CAHAYA BARU",
     "city": "BOGOR",
     "lat": -6.597,
     "lon": 106.806,
-    "address": "BOGOR, Indonesia"
+    "address": "BOGOR, Indonesia (fallback by city)"
   },
   {
     "store": "OGAN BANDULAN & OGAN BONDOWOSO",
     "city": "MALANG",
     "lat": -7.983,
     "lon": 112.63,
-    "address": "MALANG, Indonesia"
-  },
-  {
-    "store": "OGAN BANDULAN & OGAN BONDOWOSO",
-    "city": "MALANG",
-    "lat": -7.983,
-    "lon": 112.63,
-    "address": "MALANG, Indonesia"
+    "address": "MALANG, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA ELEKTRONIK BONTANG",
     "city": "BONTANG",
     "lat": 0.133,
     "lon": 117.481,
-    "address": "BONTANG, Indonesia"
+    "address": "BONTANG, Indonesia (fallback by city)"
   },
   {
     "store": "SINAR JAYA",
     "city": "CIREBON",
     "lat": -6.706,
     "lon": 108.557,
-    "address": "CIREBON, Indonesia"
+    "address": "CIREBON, Indonesia (fallback by city)"
   },
   {
     "store": "HARAPAN BARU",
     "city": "DEPOK",
     "lat": -6.402,
     "lon": 106.794,
-    "address": "DEPOK, Indonesia"
+    "address": "DEPOK, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO SINAR GUNTUR",
     "city": "GARUT",
     "lat": -7.227,
     "lon": 107.908,
-    "address": "GARUT, Indonesia"
+    "address": "GARUT, Indonesia (fallback by city)"
   },
   {
     "store": "Admin National",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "JABODETABEK",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "HARTONO PONDOK INDAH",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "JAWA ELEKTRONIK",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "SPN HOUSEWARE",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "STEIN - SPG/SPB MT",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO ATRIA KELAPA GADING",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO EMETAL ASIA JAYA (ONLINE)",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO PALAPA",
     "city": "JAKARTA",
     "lat": -6.2088,
     "lon": 106.8456,
-    "address": "JAKARTA, Indonesia"
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "MALL KELAPA GADING",
     "city": "JAKARTA",
-    "lat": -6.1509671,
-    "lon": 106.8921584,
-    "address": "Mall of Indonesia, Jalan Boulevard Barat, RW 19, Kelapa Gading Barat, Kelapa Gading, Jakarta Utara, Daerah Khusus Ibukota Jakarta, 14240, Indonesia"
-  },
-  {
-    "store": "MALL KELAPA GADING",
-    "city": "JAKARTA",
-    "lat": -6.1509671,
-    "lon": 106.8921584,
-    "address": "Mall of Indonesia, Jalan Boulevard Barat, RW 19, Kelapa Gading Barat, Kelapa Gading, Jakarta Utara, Daerah Khusus Ibukota Jakarta, 14240, Indonesia"
-  },
-  {
-    "store": "MALL KELAPA GADING",
-    "city": "JAKARTA",
-    "lat": -6.1509671,
-    "lon": 106.8921584,
-    "address": "Mall of Indonesia, Jalan Boulevard Barat, RW 19, Kelapa Gading Barat, Kelapa Gading, Jakarta Utara, Daerah Khusus Ibukota Jakarta, 14240, Indonesia"
+    "lat": -6.2088,
+    "lon": 106.8456,
+    "address": "JAKARTA, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO RAMAI JAYA JEMBER",
     "city": "JEMBER",
     "lat": -8.184,
     "lon": 113.668,
-    "address": "JEMBER, Indonesia"
+    "address": "JEMBER, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO RAMAI JAYA RAMBIPUJI",
     "city": "JEMBER",
     "lat": -8.184,
     "lon": 113.668,
-    "address": "JEMBER, Indonesia"
+    "address": "JEMBER, Indonesia (fallback by city)"
   },
   {
     "store": "UFO ELEKTRONIK KEDIRI",
     "city": "KEDIRI",
     "lat": -7.816,
     "lon": 112.016,
-    "address": "KEDIRI, Indonesia"
+    "address": "KEDIRI, Indonesia (fallback by city)"
   },
   {
     "store": "OSCAR GEMILANG",
     "city": "KETAPANG",
     "lat": -1.849,
     "lon": 109.971,
-    "address": "KETAPANG, Indonesia"
+    "address": "KETAPANG, Indonesia (fallback by city)"
   },
   {
     "store": "LARIS KLATEN",
     "city": "KLATEN",
-    "lat": -7.7058434,
-    "lon": 110.6035241,
-    "address": "Sami Laris Swalayan Klaten, Jalan Rajawali, Bareng, Klaten, Jawa Tengah, 57415, Indonesia"
+    "lat": -7.705,
+    "lon": 110.603,
+    "address": "KLATEN, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA PANGKALANBUN",
     "city": "KOTAWARINGIN BARAT",
     "lat": -2.677,
     "lon": 111.616,
-    "address": "KOTAWARINGIN BARAT, Indonesia"
+    "address": "KOTAWARINGIN BARAT, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO DEPO MURAH JAYA SENTOSA KUDUS",
     "city": "KUDUS",
     "lat": -6.804,
     "lon": 110.84,
-    "address": "KUDUS, Indonesia"
+    "address": "KUDUS, Indonesia (fallback by city)"
   },
   {
     "store": "CV GEMBIRA HOUSEWARE",
     "city": "LAMPUNG-METRO",
     "lat": -5.117,
     "lon": 105.307,
-    "address": "LAMPUNG-METRO, Indonesia"
+    "address": "LAMPUNG-METRO, Indonesia (fallback by city)"
   },
   {
     "store": "ANUGERAH SUKSES",
     "city": "LUBUKLINGGAU",
     "lat": -3.293,
     "lon": 102.851,
-    "address": "LUBUKLINGGAU, Indonesia"
+    "address": "LUBUKLINGGAU, Indonesia (fallback by city)"
   },
   {
     "store": "MAKASSAR",
     "city": "MAKASSAR",
-    "lat": -5.1448865,
-    "lon": 119.4007627,
-    "address": "Centre Point of Indonesia (CPI), Panambungan, Mariso, Makassar, Sulawesi Selatan, Indonesia"
+    "lat": -5.147,
+    "lon": 119.432,
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "ALASKA",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
-  },
-  {
-    "store": "ALASKA",
-    "city": "MAKASSAR",
-    "lat": -5.147,
-    "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "GRAND TOSERBA PENGAYOMAN",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "MAXI ALAUDDIN",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "MAXI PERINTIS",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "SEMERU PERINTIS",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "SEMERU SARAPPO",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO IWATA",
     "city": "MAKASSAR",
     "lat": -5.147,
     "lon": 119.432,
-    "address": "MAKASSAR, Indonesia"
+    "address": "MAKASSAR, Indonesia (fallback by city)"
   },
   {
     "store": "HARTONO MALANG",
     "city": "MALANG",
     "lat": -7.983,
     "lon": 112.63,
-    "address": "MALANG, Indonesia"
+    "address": "MALANG, Indonesia (fallback by city)"
   },
   {
     "store": "DAPUR KITA MATARAM",
     "city": "MATARAM",
     "lat": -8.583,
     "lon": 116.118,
-    "address": "MATARAM, Indonesia"
+    "address": "MATARAM, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO JAYA KITCHEN LOMBOK",
     "city": "MATARAM",
     "lat": -8.583,
     "lon": 116.118,
-    "address": "MATARAM, Indonesia"
+    "address": "MATARAM, Indonesia (fallback by city)"
   },
   {
     "store": "Kota Medan",
     "city": "MEDAN",
-    "lat": 3.5984746,
-    "lon": 98.6524197,
-    "address": "Universitas Prima Indonesia, 4, Jalan Sampul, Sei Putih Barat, Medan Petisah, Kota Medan, Sumatera Utara, 20118, Indonesia"
+    "lat": 3.595,
+    "lon": 98.672,
+    "address": "MEDAN, Indonesia (fallback by city)"
   },
   {
     "store": "BALIKADO MENTENG",
     "city": "MEDAN",
     "lat": 3.595,
     "lon": 98.672,
-    "address": "MEDAN, Indonesia"
+    "address": "MEDAN, Indonesia (fallback by city)"
   },
   {
     "store": "IRAMA HOUSEWARE",
     "city": "MEDAN",
     "lat": 3.595,
     "lon": 98.672,
-    "address": "MEDAN, Indonesia"
+    "address": "MEDAN, Indonesia (fallback by city)"
   },
   {
     "store": "SH MART ELEKTRONIK",
     "city": "MEDAN",
     "lat": 3.595,
     "lon": 98.672,
-    "address": "MEDAN, Indonesia"
+    "address": "MEDAN, Indonesia (fallback by city)"
   },
   {
     "store": "WIEGO HOUSEWARE TRITURA",
     "city": "MEDAN",
     "lat": 3.595,
     "lon": 98.672,
-    "address": "MEDAN, Indonesia"
+    "address": "MEDAN, Indonesia (fallback by city)"
   },
   {
     "store": "CV ANEKA JAYA ELEKTRONIK",
     "city": "MUARA ENIM",
     "lat": -3.65,
     "lon": 103.782,
-    "address": "MUARA ENIM, Indonesia"
+    "address": "MUARA ENIM, Indonesia (fallback by city)"
   },
   {
     "store": "A FAUZI",
     "city": "PADANG",
     "lat": -0.949,
     "lon": 100.353,
-    "address": "PADANG, Indonesia"
+    "address": "PADANG, Indonesia (fallback by city)"
   },
   {
     "store": "PALEMBANG",
     "city": "PALEMBANG",
-    "lat": -3.0280372,
-    "lon": 104.6901483,
-    "address": "Sri Trang Lingga Indonesia, Kertapati, Palembang, Sumatera Selatan, Indonesia"
+    "lat": -2.9761702,
+    "lon": 104.741893,
+    "address": "Palembang Square Mall, Ilir Barat I, Palembang, Sumatera Selatan, Indonesia"
   },
   {
     "store": "DAPOER MUTIARA (CV PELITA MAS)",
     "city": "PALEMBANG",
     "lat": -2.99,
     "lon": 104.757,
-    "address": "PALEMBANG, Indonesia"
+    "address": "PALEMBANG, Indonesia (fallback by city)"
   },
   {
     "store": "MDP SUPERSTORE",
     "city": "PALEMBANG",
     "lat": -2.99,
     "lon": 104.757,
-    "address": "PALEMBANG, Indonesia"
+    "address": "PALEMBANG, Indonesia (fallback by city)"
   },
   {
     "store": "ANUGRAH JAYA PALU",
     "city": "PALU",
     "lat": -0.891,
     "lon": 119.87,
-    "address": "PALU, Indonesia"
+    "address": "PALU, Indonesia (fallback by city)"
   },
   {
     "store": "HOKKY HOUSE WARE",
     "city": "PALU",
     "lat": -0.891,
     "lon": 119.87,
-    "address": "PALU, Indonesia"
+    "address": "PALU, Indonesia (fallback by city)"
   },
   {
     "store": "SMART KITCHEN",
     "city": "PALU",
     "lat": -0.891,
     "lon": 119.87,
-    "address": "PALU, Indonesia"
+    "address": "PALU, Indonesia (fallback by city)"
   },
   {
     "store": "STAR KITCHEN",
     "city": "PALU",
     "lat": -0.891,
     "lon": 119.87,
-    "address": "PALU, Indonesia"
+    "address": "PALU, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA ELEKTRONIC TANAH GROGOT",
     "city": "PASER",
     "lat": -1.741,
     "lon": 116.427,
-    "address": "PASER, Indonesia"
+    "address": "PASER, Indonesia (fallback by city)"
   },
   {
     "store": "PUSAT ELEKTRONIK",
     "city": "PATI",
     "lat": -6.756,
     "lon": 111.036,
-    "address": "PATI, Indonesia"
+    "address": "PATI, Indonesia (fallback by city)"
   },
   {
     "store": "BERKAH JAYA ELECTRONICS",
     "city": "PEKALONGAN",
     "lat": -6.888,
     "lon": 109.675,
-    "address": "PEKALONGAN, Indonesia"
+    "address": "PEKALONGAN, Indonesia (fallback by city)"
   },
   {
     "store": "BERKAT ELEKTRONIK",
     "city": "PEKANBARU",
     "lat": 0.507,
     "lon": 101.447,
-    "address": "PEKANBARU, Indonesia"
+    "address": "PEKANBARU, Indonesia (fallback by city)"
   },
   {
     "store": "GOLDEN DRAGON ELEKTRONIK",
     "city": "PEKANBARU",
     "lat": 0.507,
     "lon": 101.447,
-    "address": "PEKANBARU, Indonesia"
+    "address": "PEKANBARU, Indonesia (fallback by city)"
   },
   {
     "store": "CV SAMI JAYA",
     "city": "PONOROGO",
     "lat": -7.867,
     "lon": 111.468,
-    "address": "PONOROGO, Indonesia"
+    "address": "PONOROGO, Indonesia (fallback by city)"
   },
   {
     "store": "HIBURAN BARU SINGKAWANG",
     "city": "PONTIANAK",
     "lat": -0.026,
     "lon": 109.342,
-    "address": "PONTIANAK, Indonesia"
+    "address": "PONTIANAK, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO PUTRA ELEKTRONIK",
     "city": "PONTIANAK",
     "lat": -0.026,
     "lon": 109.342,
-    "address": "PONTIANAK, Indonesia"
+    "address": "PONTIANAK, Indonesia (fallback by city)"
   },
   {
     "store": "MAMASUKA",
     "city": "SAMARINDA",
     "lat": -0.502,
     "lon": 117.153,
-    "address": "SAMARINDA, Indonesia"
+    "address": "SAMARINDA, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA BERAU",
     "city": "SAMARINDA",
     "lat": -0.502,
     "lon": 117.153,
-    "address": "SAMARINDA, Indonesia"
+    "address": "SAMARINDA, Indonesia (fallback by city)"
   },
   {
     "store": "NUANSA IMAM BONJOL",
     "city": "SAMARINDA",
-    "lat": -0.502,
-    "lon": 117.153,
-    "address": "SAMARINDA, Indonesia"
+    "lat": -0.4977449,
+    "lon": 117.1540942,
+    "address": "Nuansa Elektronik, Gang Imam Bonjol, Pelabuhan, Samarinda Kota, Samarinda, Kalimantan Timur, 75381, Indonesia"
   },
   {
     "store": "NUANSA MATOS SAMARINDA",
     "city": "SAMARINDA",
     "lat": -0.502,
     "lon": 117.153,
-    "address": "SAMARINDA, Indonesia"
+    "address": "SAMARINDA, Indonesia (fallback by city)"
   },
   {
     "store": "TOKO SURYA JAYA",
     "city": "SAMARINDA",
     "lat": -0.502,
     "lon": 117.153,
-    "address": "SAMARINDA, Indonesia"
+    "address": "SAMARINDA, Indonesia (fallback by city)"
   },
   {
     "store": "HOKKY OMEGA SAMPIT",
     "city": "SAMPIT",
     "lat": -2.539,
     "lon": 112.949,
-    "address": "SAMPIT, Indonesia"
+    "address": "SAMPIT, Indonesia (fallback by city)"
   },
   {
     "store": "ADA SILIWANGI",
     "city": "SEMARANG",
-    "lat": -6.966,
-    "lon": 110.414,
-    "address": "SEMARANG, Indonesia"
+    "lat": -6.982587,
+    "lon": 110.404969,
+    "address": "ADA Siliwangi, Jalan MGR Soegiyopranoto, RW 01, Bulustalan, Semarang Selatan, Kota Semarang, Jawa Tengah, 50245, Indonesia"
   },
   {
     "store": "ADA SWALAYAN SETIABUDI",
     "city": "SEMARANG",
-    "lat": -6.966,
-    "lon": 110.414,
-    "address": "SEMARANG, Indonesia"
+    "lat": -7.0612762,
+    "lon": 110.4129241,
+    "address": "Pasar Swalayan ADA, Jalan Setiabudi, RW 01, Srondol Kulon, Banyumanik, Kota Semarang, Jawa Tengah, 50259, Indonesia"
   },
   {
     "store": "ATLANTA MAJAPAHIT",
     "city": "SEMARANG",
     "lat": -6.966,
     "lon": 110.414,
-    "address": "SEMARANG, Indonesia"
+    "address": "SEMARANG, Indonesia (fallback by city)"
   },
   {
     "store": "ATLANTA MATARAM",
     "city": "SEMARANG",
     "lat": -6.966,
     "lon": 110.414,
-    "address": "SEMARANG, Indonesia"
+    "address": "SEMARANG, Indonesia (fallback by city)"
   },
   {
     "store": "CANDI ELEKTRONIC 310",
     "city": "SEMARANG",
     "lat": -6.966,
     "lon": 110.414,
-    "address": "SEMARANG, Indonesia"
+    "address": "SEMARANG, Indonesia (fallback by city)"
   }
 ]
