@@ -2,20 +2,31 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     /**
-     * SEED DIMATIKAN: data kota/toko/karyawan sekarang diinput dari web
-     * (/kelola-wajah). Seeder dibiarkan kosong biar `migrate --seed` di server
-     * tidak bikin data dummy/testface123 lagi. Foto contoh tidak dihapus di
-     * sini — hapus wajah lama dari tombol "Hapus Semua Wajah Engine".
+     * Seeder cuma bikin akun admin (idempotent). Data kota/toko/karyawan
+     * diinput dari web (/kelola-wajah), bukan dari seeder.
+     *
+     * Email default: admin@presensi.local (override via ADMIN_EMAIL di .env)
+     * Password     : FACEID_ADMIN_PASSWORD di .env (fallback: admin12345)
      */
     public function run(): void
     {
+        User::updateOrCreate(
+            ['email' => config('faceid.admin_email', 'admin@presensi.local')],
+            [
+                'name'     => 'Administrator',
+                'role'     => 'admin',
+                'password' => Hash::make((string) config('faceid.admin_password') ?: 'admin12345'),
+            ],
+        );
     }
 }

@@ -20,8 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
 
         $middleware->alias([
-            'api.key' => \App\Http\Middleware\ApiKey::class,
-            'face.admin' => \App\Http\Middleware\FaceAdmin::class,
+            'api.key'      => \App\Http\Middleware\ApiKey::class,
+            'face.admin'   => \App\Http\Middleware\FaceAdmin::class,
+            'admin.auth'   => \App\Http\Middleware\AdminAuth::class,
+            'role'         => \App\Http\Middleware\RequireRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

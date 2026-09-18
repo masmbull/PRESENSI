@@ -50,7 +50,10 @@ select option { background:var(--card); }
       <div class="logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#03291d" stroke-width="2.2"/><path d="M8 12.5l3 3 5.5-6" stroke="#03291d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div><h1>Admin Presensi</h1><p class="sub">kelola toko &amp; wajah</p></div>
     </div>
-    <span class="chip"><b>{{ $stats['employees'] }}</b> karyawan &middot; <b>{{ $stats['linked'] }}</b> wajah</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+      <a class="chip" href="/admin" style="color:var(--acc)">Dashboard absen →</a>
+      <span class="chip"><b>{{ $stats['employees'] }}</b> karyawan &middot; <b>{{ $stats['linked'] }}</b> wajah</span>
+    </div>
   </header>
 
   <nav class="tabs">

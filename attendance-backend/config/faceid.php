@@ -21,6 +21,9 @@ return [
     // ngunci API — klien wajib kirim header X-Api-Key. Kosong = terbuka (dev).
     'admin_password' => env('FACEID_ADMIN_PASSWORD', ''),
 
+    // Email default akun admin (login form). Password-nya pakai FACEID_ADMIN_PASSWORD.
+    'admin_email' => env('ADMIN_EMAIL', 'admin@presensi.local'),
+
     'api_key' => env('FACEID_API_KEY', ''),
 
     // Jeda minimal antar-catat absen per karyawan per jenis masuk/pulang
