@@ -4,7 +4,8 @@ require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-$html = view('absen', [])->render();
+$html = isset($argv[1]) && is_file($argv[1]) ? file_get_contents($argv[1]) : view('absen', [])->render();
+echo 'sumber: ' . (isset($argv[1]) && is_file($argv[1]) ? 'live snapshot' : 'render lokal') . "\n";
 
 $harness = <<<'HTML'
 <div id="uitest-result" style="display:none"></div>
