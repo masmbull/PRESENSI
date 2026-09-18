@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#070b10">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Admin Â· Presensi SPG</title>
+<title>Admin · Presensi SPG</title>
 <style>
 :root { --bg:#070b10; --card:#101722; --card2:#0c121b; --line:#1c2735; --txt:#eaf1f8; --dim:#8296ab; --acc:#34d399; --acc-dk:#052e16; --warn:#f87171; --mid:#fbbf24; --sky:#38bdf8; --r:16px; }
 * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -54,10 +54,10 @@ select option { background:var(--card); }
   </header>
 
   <nav class="tabs">
-    <div class="tab on" data-p="pLokasi">ðŸ“ Toko</div>
-    <div class="tab" data-p="pKaryawan">ðŸ‘¥ Karyawan<span class="n" id="tEmp">â€¦</span></div>
-    <div class="tab" data-p="pWajah">ðŸ™‚ Wajah</div>
-    <div class="tab" data-p="pDanger">ðŸ—‘ï¸</div>
+    <div class="tab on" data-p="pLokasi">📍 Toko</div>
+    <div class="tab" data-p="pKaryawan">👥 Karyawan<span class="n" id="tEmp">…</span></div>
+    <div class="tab" data-p="pWajah">🙂 Wajah</div>
+    <div class="tab" data-p="pDanger">🗑️</div>
   </nav>
 
   <!-- ================= PANEL TOKO ================= -->
@@ -97,12 +97,12 @@ select option { background:var(--card); }
     <section class="card">
       <h2><span class="no">2</span> Daftar karyawan</h2>
       <div class="count-bar">
-        <div class="count-box s"><div class="n" id="cTotal">â€”</div><div class="l">Total</div></div>
-        <div class="count-box g"><div class="n" id="cFace">â€”</div><div class="l">Ada wajah</div></div>
-        <div class="count-box r"><div class="n" id="cNoFace">â€”</div><div class="l">Belum wajah</div></div>
+        <div class="count-box s"><div class="n" id="cTotal">—</div><div class="l">Total</div></div>
+        <div class="count-box g"><div class="n" id="cFace">—</div><div class="l">Ada wajah</div></div>
+        <div class="count-box r"><div class="n" id="cNoFace">—</div><div class="l">Belum wajah</div></div>
       </div>
       <div class="list-tools">
-        <input id="empSearch" placeholder="cari namaâ€¦">
+        <input id="empSearch" placeholder="cari nama…">
         <select id="fltStore"><option value="">semua toko</option></select>
       </div>
       <div class="list-wrap" id="empList"></div>
@@ -116,13 +116,13 @@ select option { background:var(--card); }
       <label class="fld"><span class="flbl">KARYAWAN</span><select id="faceEmp"><option value="">-- pilih karyawan --</option></select></label>
       <label class="fld"><span class="flbl">FOTO WAJAH</span><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="user"></label>
       <div class="row">
-        <button class="btn-sub" id="btnCam" type="button">ðŸ“· Kamera</button>
-        <button class="btn-sub" id="btnSnap" type="button" disabled>ðŸ“¸ Ambil Foto</button>
+        <button class="btn-sub" id="btnCam" type="button">📷 Kamera</button>
+        <button class="btn-sub" id="btnSnap" type="button" disabled>📸 Ambil Foto</button>
       </div>
       <div class="cam-wrap" id="camBox" style="display:none"><video id="cam" playsinline muted></video></div>
       <img id="preview" alt="pratinjau foto wajah">
       <button class="btn-main" id="btnDaftar" type="button">Daftarkan ke Engine</button>
-      <div class="hint">Foto terbaik: wajah depan, terang, tidak tertutup. Nama di engine otomatis "nama â€” toko" biar gak tabrakan antar toko.</div>
+      <div class="hint">Foto terbaik: wajah depan, terang, tidak tertutup. Nama di engine otomatis "nama — toko" biar gak tabrakan antar toko.</div>
     </section>
   </div>
 
@@ -136,7 +136,7 @@ select option { background:var(--card); }
   </div>
 
   <div id="msg"></div>
-  <footer><a href="/">â† kembali ke halaman absen</a></footer>
+  <footer><a href="/">← kembali ke halaman absen</a></footer>
 </div>
 <canvas id="shot" style="display:none"></canvas>
 
@@ -184,7 +184,7 @@ async function loadStores() {
     for (const sel of [$("empStore"), $("fltStore")]) {
       const cur = sel.value;
       sel.innerHTML = sel.id === "fltStore" ? '<option value="">semua toko</option>' : '<option value="">-- pilih toko --</option>';
-      STORES.forEach((s) => sel.add(new Option(s.name + (s.city ? " Â· " + s.city.name : ""), s.id)));
+      STORES.forEach((s) => sel.add(new Option(s.name + (s.city ? " · " + s.city.name : ""), s.id)));
       if (cur) sel.value = cur;
     }
     renderEmpList();
@@ -211,7 +211,7 @@ async function loadEmployees() {
     $("cFace").textContent = nFace;
     $("cNoFace").textContent = EMPLOYEES.length - nFace;
     sel.innerHTML = '<option value="">-- pilih karyawan --</option>';
-    EMPLOYEES.forEach((e) => sel.add(new Option(e.name + (e.store ? " Â· " + e.store.name : "") + (e.face_key ? " âœ“wajah" : ""), e.id)));
+    EMPLOYEES.forEach((e) => sel.add(new Option(e.name + (e.store ? " · " + e.store.name + (e.store.city ? ", " + e.store.city.name : "") : "") + (e.face_key ? " ✓wajah" : ""), e.id)));
     renderEmpList();
   } catch (e) { list.innerHTML = '<div class="emp-row"><span class="hint">Gagal muat karyawan</span></div>'; }
 }
@@ -232,15 +232,15 @@ function renderEmpList() {
     const el = document.createElement("div");
     el.className = "emp-row";
     el.innerHTML =
-      '<div class="ava ' + (e.face_key ? "ok" : "no") + '">' + (e.face_key ? "âœ“" : initials(e.name)) + '</div>' +
+      '<div class="ava ' + (e.face_key ? "ok" : "no") + '">' + (e.face_key ? "✓" : initials(e.name)) + '</div>' +
       '<div class="emp-mid"><div class="emp-name">' + e.name + '</div>' +
-      '<div class="emp-store">' + (e.store ? e.store.name : "â€” tanpa toko â€”") + (e.employee_code ? " Â· " + e.employee_code : "") + '</div></div>' +
-      '<span class="st ' + (e.face_key ? "ok" : "no") + '">' + (e.face_key ? "WAJAH âœ“" : "BELUM") + '</span>';
-    // klik â†’ langsung lompat ke panel wajah dengan karyawan ini kepilih
+      '<div class="emp-store">' + (e.store ? e.store.name + (e.store.city ? " · " + e.store.city.name : "") : "— tanpa toko —") + (e.employee_code ? " · " + e.employee_code : "") + '</div></div>' +
+      '<span class="st ' + (e.face_key ? "ok" : "no") + '">' + (e.face_key ? "WAJAH ✓" : "BELUM") + '</span>';
+    // klik → langsung lompat ke panel wajah dengan karyawan ini kepilih
     el.onclick = () => {
       $("faceEmp").value = e.id;
       document.querySelector('[data-p="pWajah"]').click();
-      msg("ok", "Daftarkan wajah buat " + e.name + " â†’ pilih foto, terus Daftarkan.");
+      msg("ok", "Daftarkan wajah buat " + e.name + (e.store ? " @ " + e.store.name : "") + " → pilih foto, terus Daftarkan.");
     };
     list.appendChild(el);
   });
@@ -257,7 +257,7 @@ $("btnKota").onclick = async () => {
   $("btnKota").disabled = true;
   try {
     const j = await post("/kelola-wajah/kota", JSON.stringify({ name }));
-    msg("ok", "Kota tersimpan: " + j.city.name + (j.created ? " (baru)" : " (udah ada â€” dipakai yang lama)"));
+    msg("ok", "Kota tersimpan: " + j.city.name + (j.created ? " (baru)" : " (udah ada — dipakai yang lama)"));
     $("city").value = "";
     await loadCities();
     if (j.city.id) $("storeCity").value = j.city.id;
@@ -340,13 +340,13 @@ $("btnDaftar").onclick = async () => {
   if (!$("faceEmp").value) return msg("err", "Pilih karyawan dulu.");
   if (!snapped) return msg("err", "Pilih foto atau ambil dari kamera dulu.");
   $("btnDaftar").disabled = true;
-  msg("ok", "Mengirim ke engineâ€¦ (bisa beberapa detik)");
+  msg("ok", "Mengirim ke engine… (bisa beberapa detik)");
   try {
     const fd = new FormData();
     fd.append("employee_id", $("faceEmp").value);
     fd.append("photo", snapped, snapped.name || "wajah.jpg");
     const j = await post("/kelola-wajah/daftar", fd, true);
-    msg("ok", "Wajah " + j.employee.name + " terdaftar âœ“ â€” silakan tes absen.");
+    msg("ok", "Wajah " + j.employee.name + " terdaftar ✓ — silakan tes absen.");
     snapped = null;
     $("photo").value = "";
     $("preview").style.display = "none";
