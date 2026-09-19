@@ -8,10 +8,13 @@ foreach (['absen' => [], 'wajah' => ['stats' => ['cities' => 0, 'stores' => 0, '
         $len = strlen($html);
         $bad = preg_match('/[\xC2\xC3\xE2\xF0](?![\x80-\xBF]{1,2})/s', $html); // heuristik mojibake mentah
         echo "$v: OK ($len byte, mojibake-raw=" . var_export((bool) $bad, true) . ")\n";
-        // cuplikan: pastikan label toko+kota muncul di JS
+        // cuplikan: pastikan elemen kunci view wajah ter-render
         if ($v === 'wajah') {
-            $found = str_contains($html, 'e.store.city') ? 'label kota ADA' : 'label kota HILANG';
-            echo "  $found\n";
+            $markers = ['kw-tab', 'pMaster', 'pWajah', 'pDanger', 'btnKota', 'btnLokasi', 'btnDaftar', 'storeRows', 'empList'];
+            $missing = array_filter($markers, fn ($m) => ! str_contains($html, $m));
+            echo $missing
+                ? '  MARKER HILANG: ' . implode(', ', $missing) . "\n"
+                : "  marker wajah lengkap\n";
         }
     } catch (Throwable $e) {
         echo "$v: GAGAL — " . $e->getMessage() . "\n";

@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class FaceManagementController extends Controller
 {
@@ -25,11 +26,35 @@ class FaceManagementController extends Controller
         return view('wajah', ['stats' => $stats]);
     }
 
-    /** POST /kelola-wajah/lokasi — tambah kota + toko sekaligus. */
+    /** POST /kelola-wajah/kota — tambah kota (dedupe by nama, gak bikin dobel). */
+    public function createCity(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:80',
+        ]);
+
+        $name = trim($data['name']);
+        $city = City::whereRaw('lower(name) = ?', [mb_strtolower($name)])->first();
+        $created = false;
+
+        if ($city === null) {
+            $city = City::create(['name' => $name]);
+            $created = true;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'created' => $created,
+            'city' => $city->loadCount('stores'),
+        ], $created ? 201 : 200);
+    }
+
+    /** POST /kelola-wajah/lokasi — tambah kota (opsional) + toko sekaligus. */
     public function location(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'city' => 'required|string|max:80',
+            'city_id' => 'nullable|integer|exists:cities,id',
+            'city' => 'nullable|string|max:80',
             'store' => 'required|string|max:120',
             'address' => 'nullable|string|max:255',
             'lat' => 'required|numeric|between:-90,90',
@@ -37,7 +62,14 @@ class FaceManagementController extends Controller
             'radius_m' => 'nullable|integer|min:10|max:5000',
         ]);
 
-        $city = City::firstOrCreate(['name' => trim($data['city'])]);
+        // Boleh pilih kota yang sudah ada (city_id) atau ketik kota baru (city).
+        if (empty($data['city_id']) && empty($data['city'])) {
+            throw ValidationException::withMessages(['city_id' => 'Pilih kota dulu, atau isi nama kota baru.']);
+        }
+
+        $city = ! empty($data['city_id'])
+            ? City::findOrFail($data['city_id'])
+            : City::firstOrCreate(['name' => trim((string) $data['city'])]);
 
         $store = Store::updateOrCreate(
             ['city_id' => $city->id, 'name' => trim($data['store'])],

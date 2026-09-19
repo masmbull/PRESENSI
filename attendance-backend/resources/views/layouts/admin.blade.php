@@ -128,7 +128,7 @@ tbody tr:hover{background:rgba(148,178,214,.05)}
 <div class="toast" id="toast"></div>
 <script>
 const $ = (id) => document.getElementById(id);
-const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+let CSRF = document.querySelector('meta[name="csrf-token"]').content;
 let toastTimer = null;
 function toast(msg, kind) {
   const t = $('toast');
@@ -142,11 +142,24 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 async function api(url, body) {
-  const r = await fetch(url, {
+  const send = () => fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
     body: JSON.stringify(body || {}),
   });
+  let r = await send();
+  if (r.status === 419) {
+    // Token CSRF ke-rotate sama POST terakhir -> ambil ulang dari halaman, lalu coba lagi.
+    try {
+      const html = await (await fetch(window.location.href, { headers: { Accept: 'text/html' } })).text();
+      const m = html.match(/name="csrf-token" content="([^"]+)"/);
+      if (m) {
+        CSRF = m[1];
+        document.querySelector('meta[name="csrf-token"]').setAttribute('content', CSRF);
+        r = await send();
+      }
+    } catch (e) { /* fallthrough ke error di bawah */ }
+  }
   const j = await r.json().catch(() => ({}));
   if (!r.ok || j.ok === false) throw new Error(j.message || ('HTTP ' + r.status));
   return j;
