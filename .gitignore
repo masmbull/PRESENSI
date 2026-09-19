@@ -15,7 +15,7 @@ attendance.json
 faces.json
 samples/
 
-# ---------- model ONNX ikut repo (~52MB) — biar clone langsung jalan ----------
+# ---------- model ONNX ikut repo (~52MB) â€” biar clone langsung jalan ----------
 # jangan tambahin model lain yang >100MB (limit per-file GitHub)
 
 # ---------- tool/agent lokal ----------
@@ -29,3 +29,6 @@ attendance-backend/.env.backup
 attendance-backend/storage/logs/
 attendance-backend/storage/framework/cache/data/
 attendance-backend/resources/views/_prefix*.tmp
+attendance-backend/public/__mapdbg*.html
+attendance-backend/storage/app/shot-*.png
+attendance-backend/storage/app/mapdbg.png

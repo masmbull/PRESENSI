@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#05080d">
 <title>Presensi SPG</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.0/maplibre-gl.min.css" integrity="sha384-GriUtmHM/C5kppqM+je9BCInk5YLY4k8/MEXQNSB9gE0BLi6af+iFZlypsIX+LE6" crossorigin="">
+<!-- Basemap raster gratis tanpa batas: OpenStreetMap HOT (operated by HOT, tile.openstreetmap.fr). Tanpa API key, tanpa kuota. -->
 <style>
 :root{
 --bg:#05080d; --card:rgba(15,22,34,.62); --card2:#0a111b; --line:rgba(148,178,214,.14);
@@ -58,7 +58,7 @@ h2{font-size:11px;margin:0 0 12px;color:var(--dim);font-weight:700;text-transfor
 .step.active .snum{border-color:var(--sky);color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
 .step.active .slbl{color:var(--sky)}
 .step.done .snum{background:var(--acc);border-color:var(--acc);color:var(--acc-dk);font-size:0}
-.step.done .snum::after{content:"✓";font-size:12px}
+.step.done .snum::after{content:"âœ“";font-size:12px}
 .step.done .slbl{color:var(--txt)}
 .sline{height:2px;flex:1;background:var(--line);border-radius:2px;transition:background .25s}
 .sline.done{background:var(--acc)}
@@ -184,7 +184,11 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
 #mOk{margin-top:20px;width:100%;padding:13px;background:var(--acc);color:var(--acc-dk);border:0;border-radius:12px;font-weight:800;cursor:pointer}
 /* ---------- pins peta ---------- */
 .store-pin,.user-pin{background:transparent;border:0}
-.store-pin-dot{width:13px;height:13px;border-radius:50%;background:var(--acc);border:3px solid #064e3b;box-shadow:0 0 8px rgba(52,211,153,.8)}
+/* pin toko: titik + cincin putih biar kelihatan di basemap gelap */
+.store-pin-dot{width:16px;height:16px;border-radius:50%;background:var(--acc);border:3px solid #ecfdf5;box-shadow:0 0 10px rgba(52,211,153,.9);box-sizing:border-box}
+/* flag nama toko: parent divIcon-nya width 0, jadi wajib inline-flex biar kotaknya ikut teks */
+.store-flag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#ecfdf5;background:rgba(5,8,13,.82);border:1px solid rgba(52,211,153,.45);border-radius:9px;padding:3px 8px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.store-flag .fdot{width:8px;height:8px;border-radius:50%;background:var(--acc);flex:none;box-shadow:0 0 6px rgba(52,211,153,.9)}
 .user-dot{width:13px;height:13px;border-radius:50%;background:var(--sky);border:3px solid #e0f2fe;animation:pulse 1.6s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(56,189,248,.55)}70%{box-shadow:0 0 0 12px rgba(56,189,248,0)}100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}}
 .leaflet-container{background:var(--card2)}
@@ -205,15 +209,15 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
       <div class="logo"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#03291d" stroke-width="2.2"/><path d="M8 12.5l3 3 5.5-6" stroke="#03291d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div>
         <h1>Presensi SPG</h1>
-        <p class="sub">face id · geofence · realtime</p>
+        <p class="sub">face id Â· geofence Â· realtime</p>
       </div>
     </div>
-    <span class="chip">Face ID <b id="faceState">…</b></span>
+    <span class="chip">Face ID <b id="faceState">â€¦</b></span>
   </header>
 
   <div class="statusbar">
-    <div class="stchip"><span class="sdot live" id="gpsDot"></span><span class="v" id="gpsVal">GPS…</span></div>
-    <div class="stchip"><span class="sdot" id="ipDot"></span><span class="v" id="ipVal">IP…</span></div>
+    <div class="stchip"><span class="sdot live" id="gpsDot"></span><span class="v" id="gpsVal">GPSâ€¦</span></div>
+    <div class="stchip"><span class="sdot" id="ipDot"></span><span class="v" id="ipVal">IPâ€¦</span></div>
     <div class="stchip"><span class="sdot ok" id="netDot"></span><span class="v" id="netVal">ONLINE</span></div>
   </div>
 
@@ -229,11 +233,11 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
     <label class="fld"><span class="dd-lbl">Kota</span>
       <div class="dd empty" id="ddCity">
         <button type="button" class="dd-btn" id="ddCityBtn" disabled>
-          <span class="dd-ico">🏙️</span><span class="dd-val" id="ddCityVal">memuat…</span>
+          <span class="dd-ico">ðŸ™ï¸</span><span class="dd-val" id="ddCityVal">memuatâ€¦</span>
           <svg class="dd-chev" viewBox="0 0 12 8" width="12" height="8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="dd-panel" id="ddCityPanel" hidden>
-          <div class="dd-searchwrap" style="display:none"><input id="ddCitySearch" class="dd-search" placeholder="cari kota…" autocomplete="off"></div>
+          <div class="dd-searchwrap" style="display:none"><input id="ddCitySearch" class="dd-search" placeholder="cari kotaâ€¦" autocomplete="off"></div>
           <div class="dd-list" id="ddCityList" role="listbox"></div>
         </div>
       </div>
@@ -242,11 +246,11 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
     <label class="fld"><span class="dd-lbl">Toko</span>
       <div class="dd empty" id="ddStore">
         <button type="button" class="dd-btn" id="ddStoreBtn" disabled>
-          <span class="dd-ico">🏬</span><span class="dd-val" id="ddStoreVal">pilih kota dulu…</span>
+          <span class="dd-ico">ðŸ¬</span><span class="dd-val" id="ddStoreVal">pilih kota duluâ€¦</span>
           <svg class="dd-chev" viewBox="0 0 12 8" width="12" height="8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="dd-panel" id="ddStorePanel" hidden>
-          <div class="dd-searchwrap" style="display:none"><input id="ddStoreSearch" class="dd-search" placeholder="cari toko…" autocomplete="off"></div>
+          <div class="dd-searchwrap" style="display:none"><input id="ddStoreSearch" class="dd-search" placeholder="cari tokoâ€¦" autocomplete="off"></div>
           <div class="dd-list" id="ddStoreList" role="listbox"></div>
         </div>
       </div>
@@ -255,22 +259,22 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
     <label class="fld" style="margin-bottom:0"><span class="dd-lbl">Nama Kamu</span>
       <div class="dd empty" id="ddEmp">
         <button type="button" class="dd-btn" id="ddEmpBtn" disabled>
-          <span class="dd-ico">🙋</span><span class="dd-val" id="ddEmpVal">pilih toko dulu…</span>
+          <span class="dd-ico">ðŸ™‹</span><span class="dd-val" id="ddEmpVal">pilih toko duluâ€¦</span>
           <svg class="dd-chev" viewBox="0 0 12 8" width="12" height="8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="dd-panel" id="ddEmpPanel" hidden>
-          <div class="dd-searchwrap" style="display:none"><input id="ddEmpSearch" class="dd-search" placeholder="cari nama…" autocomplete="off"></div>
+          <div class="dd-searchwrap" style="display:none"><input id="ddEmpSearch" class="dd-search" placeholder="cari namaâ€¦" autocomplete="off"></div>
           <div class="dd-list" id="ddEmpList" role="listbox"></div>
         </div>
       </div>
     </label>
 
     <div id="idcard">
-      <div class="ava" id="empAva">–</div>
+      <div class="ava" id="empAva">â€“</div>
       <div class="idc">
-        <div class="idc-name" id="empNameTxt">—</div>
-        <div class="idc-store" id="empMeta">—</div>
-        <div class="idc-code"><span class="t">ID Karyawan</span><span class="code" id="empCode">—</span></div>
+        <div class="idc-name" id="empNameTxt">â€”</div>
+        <div class="idc-store" id="empMeta">â€”</div>
+        <div class="idc-code"><span class="t">ID Karyawan</span><span class="code" id="empCode">â€”</span></div>
       </div>
     </div>
   </section>
@@ -283,21 +287,21 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
         <path fill-rule="evenodd" d="M0 0 H400 V533 H0 Z M200 105 C275 105 315 162 315 235 C315 308 272 385 200 415 C128 385 85 308 85 235 C85 162 125 105 200 105 Z" fill="rgba(5,8,13,0.6)"></path>
         <path class="face-outline" d="M200 105 C275 105 315 162 315 235 C315 308 272 385 200 415 C128 385 85 308 85 235 C85 162 125 105 200 105 Z" fill="none" stroke-width="3"></path>
       </svg>
-      <div id="camState">menyalakan kamera…</div>
+      <div id="camState">menyalakan kameraâ€¦</div>
     </div>
     <div id="faceResult"></div>
-    <button id="btnScan" type="button">📷 Scan Wajah</button>
+    <button id="btnScan" type="button">ðŸ“· Scan Wajah</button>
   </section>
 
   <section class="card">
     <h2>Lokasi &amp; zona absen</h2>
     <div id="map"></div>
     <div id="zone"></div>
-    <div id="loc">Mencari sinyal GPS…</div>
+    <div id="loc">Mencari sinyal GPSâ€¦</div>
     <details class="tes">
-      <summary>🧪 mode tes lokasi</summary>
+      <summary>ðŸ§ª mode tes lokasi</summary>
       <div class="row" style="margin-top:8px">
-        <button class="mini" id="btnCenter" type="button">🎯 tengah-kan</button>
+        <button class="mini" id="btnCenter" type="button">ðŸŽ¯ tengah-kan</button>
         <button class="mini" id="btnSimIn" type="button">dalam zona</button>
         <button class="mini" id="btnSimOut" type="button">luar zona &gt;1km</button>
       </div>
@@ -313,15 +317,15 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
 </div>
 
 <div class="actionbar">
-  <button id="btnMasuk" class="cta" type="button" disabled>🌅 Absen Masuk</button>
-  <button id="btnPulang" class="cta" type="button" disabled>🌙 Absen Pulang</button>
+  <button id="btnMasuk" class="cta" type="button" disabled>ðŸŒ… Absen Masuk</button>
+  <button id="btnPulang" class="cta" type="button" disabled>ðŸŒ™ Absen Pulang</button>
 </div>
 
 <div id="modal">
   <div class="modal" id="modalBox">
-    <div class="micon" id="mIcon">✅</div>
-    <div id="mTitle">—</div>
-    <div id="mDesc" style="display:none">—</div>
+    <div class="micon" id="mIcon">âœ…</div>
+    <div id="mTitle">â€”</div>
+    <div id="mDesc" style="display:none">â€”</div>
     <div class="mrows" id="mRows" style="display:none"></div>
     <button id="mOk" type="button">OK</button>
   </div>
@@ -332,7 +336,7 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
 
 <script>
 const $ = (id) => document.getElementById(id);
-// API key diinject dari config server (FACEID_API_KEY) — kosong = mode dev terbuka
+// API key diinject dari config server (FACEID_API_KEY) â€” kosong = mode dev terbuka
 const API_KEY = @json((string) config('faceid.api_key'));
 const API_HEADERS = API_KEY ? { "X-Api-Key": API_KEY } : {};
 const state = { city: null, store: null, stores: [], employees: [], employee: null, coords: null, faceEnabled: false, face: null, camStarted: false, ip: null };
@@ -353,7 +357,7 @@ function flash(kind, text) {
 }
 
 function popup(kind, title, desc, rows) {
-  $("mIcon").textContent = kind === "success" ? "✅" : (kind === "error" ? "🚫" : "⏳");
+  $("mIcon").textContent = kind === "success" ? "âœ…" : (kind === "error" ? "ðŸš«" : "â³");
   $("modalBox").className = "modal " + kind;
   $("mTitle").textContent = title;
   const d = $("mDesc");
@@ -416,7 +420,7 @@ function makeDD(id, opts) {
     const src = view ?? items;
     sw.style.display = items.length >= 8 ? "block" : "none";
     if (!src.length) {
-      list.innerHTML = '<div class="dd-empty">' + (items.length ? "gak ketemu — coba kata lain" : "tidak ada data") + "</div>";
+      list.innerHTML = '<div class="dd-empty">' + (items.length ? "gak ketemu â€” coba kata lain" : "tidak ada data") + "</div>";
       return;
     }
     list.innerHTML = "";
@@ -425,7 +429,7 @@ function makeDD(id, opts) {
       el.className = "dd-item" + (it.v == value ? " sel" : "") + (i === hl ? " hl" : "");
       el.setAttribute("role", "option");
       el.style.animationDelay = (Math.min(i, 14) * 22) + "ms";
-      el.innerHTML = '<div class="li"><div class="nm">' + it.label + '</div>' + (it.sub ? '<div class="sb">' + it.sub + '</div>' : "") + '</div>' + (it.v == value ? '<span class="tick">✓</span>' : "");
+      el.innerHTML = '<div class="li"><div class="nm">' + it.label + '</div>' + (it.sub ? '<div class="sb">' + it.sub + '</div>' : "") + '</div>' + (it.v == value ? '<span class="tick">âœ“</span>' : "");
       el.onclick = () => pick(it);
       list.appendChild(el);
     });
@@ -535,12 +539,12 @@ function makeDD(id, opts) {
     setItems(arr) {
       items = arr; view = null; value = null; hl = -1;
       root.classList.add("empty");
-      valEl.textContent = opts.emptyText || "pilih…";
+      valEl.textContent = opts.emptyText || "pilihâ€¦";
       if (open) _close();
       renderList();
     },
     setDisabled(b) { disabled = b; btn.disabled = b; if (b) _close(); },
-    setBusy(b) { btn.disabled = b || disabled; if (b) { root.classList.add("empty"); valEl.textContent = "memuat…"; } },
+    setBusy(b) { btn.disabled = b || disabled; if (b) { root.classList.add("empty"); valEl.textContent = "memuatâ€¦"; } },
     setValueLabel(t) { valEl.textContent = t; },
     _close,
   });
@@ -550,36 +554,36 @@ function makeDD(id, opts) {
 </script>
 
 <script>
-// ---------- dropdown kota → toko → karyawan ----------
-const ddCity = makeDD("ddCity", { emptyText: "pilih kota…", onChange: (v) => {
+// ---------- dropdown kota â†’ toko â†’ karyawan ----------
+const ddCity = makeDD("ddCity", { emptyText: "pilih kotaâ€¦", onChange: (v) => {
   state.city = v;
   state.store = null;
   ddStore.setItems([]); ddStore.setBusy(true); ddStore.setDisabled(true);
   ddEmp.setItems([]); ddEmp.setDisabled(true);
-  ddEmp.setValueLabel("pilih toko dulu…");
+  ddEmp.setValueLabel("pilih toko duluâ€¦");
   resetEmp(); clearZone();
   loadStores(v);
   setStepper();
 }});
 
-const ddStore = makeDD("ddStore", { emptyText: "pilih toko…", onChange: (v) => {
+const ddStore = makeDD("ddStore", { emptyText: "pilih tokoâ€¦", onChange: (v) => {
   state.store = state.stores.find((s) => s.id == v) || null;
   showZone(state.store);
   ddEmp.setItems([]); ddEmp.setBusy(true); ddEmp.setDisabled(true);
-  ddEmp.setValueLabel("memuat…");
+  ddEmp.setValueLabel("memuatâ€¦");
   resetEmp();
   loadEmployees(v);
   setStepper();
 }});
 
-const ddEmp = makeDD("ddEmp", { emptyText: "pilih nama kamu…", onChange: (v) => {
+const ddEmp = makeDD("ddEmp", { emptyText: "pilih nama kamuâ€¦", onChange: (v) => {
   state.employee = state.employees.find((e) => e.id == v) || null;
   if (!state.employee) { resetEmp(); return; }
   resetFace();
   $("empAva").textContent = initials(state.employee.name);
   $("empNameTxt").textContent = state.employee.name;
-  $("empCode").textContent = state.employee.employee_code || "—";
-  $("empMeta").textContent = state.store ? state.store.name : "—";
+  $("empCode").textContent = state.employee.employee_code || "â€”";
+  $("empMeta").textContent = state.store ? state.store.name : "â€”";
   $("idcard").style.display = "flex";
   $("msg").style.display = "none";
   updateFaceCard();
@@ -600,7 +604,7 @@ async function loadCities() {
     ddCity.setDisabled(false);
   } catch (e) {
     ddCity.setItems([]);
-    ddCity.setValueLabel("gagal memuat — refresh halaman");
+    ddCity.setValueLabel("gagal memuat â€” refresh halaman");
   }
   ddCity.setBusy(false);
 }
@@ -609,7 +613,7 @@ async function loadStores(cityId) {
   try {
     const rows = await jget("/api/stores?city_id=" + cityId);
     state.stores = rows;
-    ddStore.setItems(rows.map((s) => ({ v: s.id, label: s.name, sub: s.employees_count + " spg · radius " + s.radius_m + " m" })));
+    ddStore.setItems(rows.map((s) => ({ v: s.id, label: s.name, sub: s.employees_count + " spg Â· radius " + s.radius_m + " m" })));
     ddStore.setDisabled(false);
   } catch (e) {
     ddStore.setItems([]);
@@ -637,7 +641,12 @@ async function loadEmployees(storeId) {
 const geo = { map: null, circle: null, storePin: null, userPin: null, watchId: null, ready: false };
 
 function zoneRadius() {
-  return (state.store && state.store.radius_m) ? state.store.radius_m : 150;
+  return (state.store && Number(state.store.radius_m)) ? Number(state.store.radius_m) : 150;
+}
+
+function num(v, fb) {
+  v = Number(v);
+  return Number.isFinite(v) ? v : fb;
 }
 
 function distanceMeters(a, b) {
@@ -649,52 +658,98 @@ function distanceMeters(a, b) {
 
 function initMap() {
   if (typeof L === "undefined") {
-    $("map").innerHTML = '<div id="mapFallback">peta gak termuat — butuh internet</div>';
+    $("map").innerHTML = '<div id="mapFallback">peta gak termuat â€” butuh internet</div>';
     return;
   }
   $("map").innerHTML = "";
-  geo.map = L.map("map", { zoomControl: false });
-  // Basemap OpenFreeMap (open source, MIT, tanpa API key) dirender via MapLibre GL.
-  // Plugin resmi maplibre-gl-leaflet njalanin GL engine di dalam Leaflet,
-  // jadi circle / pin / fitBounds Leaflet tetap jalan tanpa perubahan.
-  geo.gl = L.maplibreGL({
-    style: "https://tiles.openfreemap.org/styles/dark",
-    updateWhenIdle: true,
-  }).addTo(geo.map);
+  geo.map = L.map("map", { zoomControl: false, attributionControl: true });
+  geo.failed = false; geo.usingRaster = false;
+  try {
+    if (!L.maplibreGL) throw new Error("plugin maplibre-gl-leaflet belum termuat");
+    // Basemap OpenFreeMap (open source, MIT, tanpa API key) dirender via MapLibre GL.
+    // Plugin resmi maplibre-gl-leaflet njalanin GL engine di dalam Leaflet,
+    // jadi circle / pin / fitBounds Leaflet tetap jalan tanpa perubahan.
+    geo.gl = L.maplibreGL({
+      style: "https://tiles.openfreemap.org/styles/dark",
+      updateWhenIdle: true,
+    }).addTo(geo.map);
+    // Safety net: kalau style GL gagal 12 detik (offline / tile diblokir),
+    // jatuh ke raster OSM HOT yang ringan, biar zona + pin tetap kelihatan.
+    clearTimeout(geo.rasterTimer);
+    geo.rasterTimer = setTimeout(() => {
+      if (!geo.ready || geo.usingRaster) return;
+      try {
+        if (geo.gl) { geo.map.removeLayer(geo.gl); geo.gl = null; }
+        geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+          maxZoom: 19, attribution: "Â© OpenStreetMap Â· HOT",
+        }).addTo(geo.map);
+        geo.usingRaster = true;
+      } catch (e) {}
+    }, 12000);
+  } catch (e) {
+    geo.failed = true;
+    geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "Â© OpenStreetMap Â· HOT",
+    }).addTo(geo.map);
+    geo.usingRaster = true;
+  }
   geo.map.setView([-2.5, 118], 4); // Indonesia
   geo.ready = true;
+  if (state.store) showZone(state.store); // gambar ulang kalau toko udah dipilih duluan
 }
 
 function storeIcon() {
   return L.divIcon({ className: "store-pin", html: '<div class="store-pin-dot"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
 }
 
+function storeLabel(store) {
+  return L.divIcon({
+    className: "", html: '<div class="store-flag"><span class="fdot"></span>' + store.name + '</div>',
+    iconSize: [0, 0], iconAnchor: [-14, 14],
+  });
+}
+
 function userIcon() {
   return L.divIcon({ className: "user-pin", html: '<div class="user-dot"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
 }
 
+// Zona gaya PUBG: ring luar putih terang + isi hijau transparan,
+// pinggir luar dikasih glow halus biar batas 150 m kelihatan jelas.
 function showZone(store) {
   if (!geo.ready) return;
   if (!store) { clearZone(); return; }
+  const lat = num(store.lat, null), lon = num(store.lon, null);
+  if (lat === null || lon === null) {
+    clearZone();
+    flash('err', 'Koordinat toko belum bener (' + store.lat + ', ' + store.lon + ') â€” perbaiki di Kelola Wajah.');
+    return;
+  }
   if (geo.circle) geo.circle.remove();
   if (geo.storePin) geo.storePin.remove();
-  geo.circle = L.circle([store.lat, store.lon], {
+  if (geo.storeLabel) geo.storeLabel.remove();
+  if (geo.accCircle) geo.accCircle.remove();
+  geo.circle = L.circle([lat, lon], {
     radius: zoneRadius(),
-    color: "#7dd3fc",
-    weight: 3,
-    opacity: 0.95,
-    fillColor: "#38bdf8",
-    fillOpacity: 0.13,
+    color: '#f8fafc',
+    weight: 3.5,
+    opacity: 1,
+    fillColor: '#34d399',
+    fillOpacity: 0.22,
   }).addTo(geo.map);
-  geo.storePin = L.marker([store.lat, store.lon], { icon: storeIcon() }).addTo(geo.map);
-  geo.map.fitBounds(geo.circle.getBounds().pad(0.35));
-  refreshZone();
+  geo.circle.bringToFront();
+  geo.storePin = L.marker([lat, lon], { icon: storeIcon(), zIndexOffset: 1000 }).addTo(geo.map);
+  geo.storeLabel = L.marker([lat, lon], { icon: storeLabel(store), interactive: false, keyboard: false }).addTo(geo.map);
+  // pad 0.2: bulatan ngisi peta (sebelumnya 0.6 â†’ zona cuma seperempat lebar peta, susah dibaca)
+  try { geo.map.fitBounds(geo.circle.getBounds().pad(0.2), { maxZoom: 18 }); } catch (e2) { geo.map.setView([lat, lon], 17); }
+  if (state.coords) refreshZone();
 }
 
 function clearZone() {
   if (!geo.ready) return;
   if (geo.circle) { geo.circle.remove(); geo.circle = null; }
   if (geo.storePin) { geo.storePin.remove(); geo.storePin = null; }
+  if (geo.storeLabel) { geo.storeLabel.remove(); geo.storeLabel = null; }
+  if (geo.accCircle) { geo.accCircle.remove(); geo.accCircle = null; }
   $("zone").className = "";
   $("zone").textContent = "";
 }
@@ -717,19 +772,19 @@ function setUser(lat, lon, acc) {
 function refreshZone() {
   if (!state.coords) return;
   gpsChip(state.coords.acc);
-  $("gpsVal").textContent = "±" + Math.round(state.coords.acc || 0) + " m";
+  $("gpsVal").textContent = "Â±" + Math.round(state.coords.acc || 0) + " m";
   if (state.store) {
     const d = distanceMeters(state.coords, state.store);
     const inside = d <= zoneRadius();
     $("zone").className = inside ? "zone-in" : "zone-out";
     $("zone").textContent = inside
-      ? "✅ Kamu di dalam zona — absen bisa diproses"
-      : "🚫 Kamu di luar zona absen — deketin tokonya dulu";
+      ? "âœ… Kamu di dalam zona â€” absen bisa diproses"
+      : "ðŸš« Kamu di luar zona absen â€” deketin tokonya dulu";
   } else {
     $("zone").className = "";
     $("zone").textContent = "";
   }
-  $("loc").textContent = "GPS aktif · IP " + (state.ip || "…");
+  $("loc").textContent = "GPS aktif Â· IP " + (state.ip || "â€¦");
 }
 
 function startGps() {
@@ -740,7 +795,7 @@ function startGps() {
     (err) => {
       $("gpsVal").textContent = "GPS GAGAL";
       $("gpsDot").className = "sdot bad";
-      $("loc").textContent = "GPS gagal (" + err.message + ") — cek izin lokasi browser, atau pakai tombol tes.";
+      $("loc").textContent = "GPS gagal (" + err.message + ") â€” cek izin lokasi browser, atau pakai tombol tes.";
       geo.watchId = null;
     },
     { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
@@ -748,7 +803,7 @@ function startGps() {
 }
 
 function sim(delta) {
-  if (!state.store) { flash("err", "Pilih toko dulu — titiknya ikut toko."); return; }
+  if (!state.store) { flash("err", "Pilih toko dulu â€” titiknya ikut toko."); return; }
   setUser(
     state.store.lat + delta * (Math.random() - 0.5),
     state.store.lon + delta * (Math.random() - 0.5),
@@ -757,7 +812,7 @@ function sim(delta) {
 }
 
 function simFar() {
-  if (!state.store) { flash("err", "Pilih toko dulu — titiknya ikut toko."); return; }
+  if (!state.store) { flash("err", "Pilih toko dulu â€” titiknya ikut toko."); return; }
   setUser(state.store.lat + 0.015, state.store.lon + 0.012, 10);
 }
 
@@ -765,8 +820,8 @@ $("btnCenter").onclick = () => {
   if (!geo.ready || !state.coords) { flash("err", "Lokasi belum kebaca."); return; }
   geo.map.setView([state.coords.lat, state.coords.lon], Math.max(geo.map.getZoom(), 16));
 };
-$("btnSimIn").onclick = () => sim(0.0001);   // ±5 m dari titik → dalam zona
-$("btnSimOut").onclick = simFar;             // jauh ±1.6-1.9 km dari titik → pasti luar zona
+$("btnSimIn").onclick = () => sim(0.0001);   // Â±5 m dari titik â†’ dalam zona
+$("btnSimOut").onclick = simFar;             // jauh Â±1.6-1.9 km dari titik â†’ pasti luar zona
 </script>
 
 <script>
@@ -800,7 +855,7 @@ function ensureCam() {
     $("camState").textContent = "posisikan wajah kamu di dalam lingkaran";
   }).catch((err) => {
     state.camStarted = false;
-    $("camState").textContent = "kamera gagal (" + err.name + ") — izinkan akses kamera di browser";
+    $("camState").textContent = "kamera gagal (" + err.name + ") â€” izinkan akses kamera di browser";
     $("btnScan").disabled = true;
   });
 }
@@ -809,9 +864,9 @@ async function scanFace() {
   const v = $("cam");
   if (!v.videoWidth) { popup("error", "Kamera belum siap", "Tunggu sebentar atau cek izin kamera di browser."); return; }
   $("btnScan").disabled = true;
-  $("btnScan").textContent = "Memindai…";
+  $("btnScan").textContent = "Memindaiâ€¦";
   try {
-    // crop potret 3:4 dari tengah video (sesuai frame guide) → jpeg
+    // crop potret 3:4 dari tengah video (sesuai frame guide) â†’ jpeg
     const vw = v.videoWidth, vh = v.videoHeight;
     let cw = vw, ch = Math.round(vw * 4 / 3);
     if (ch > vh) { ch = vh; cw = Math.round(vh * 3 / 4); }
@@ -836,7 +891,7 @@ async function scanFace() {
     $("faceRing").classList.add("ok");
     $("faceResult").className = "ok";
     $("faceResult").style.display = "block";
-    $("faceResult").textContent = "✅ Wajah cocok: " + (out.name || "-") + (out.cosine ? " (skor " + Number(out.cosine).toFixed(2) + ")" : "");
+    $("faceResult").textContent = "âœ… Wajah cocok: " + (out.name || "-") + (out.cosine ? " (skor " + Number(out.cosine).toFixed(2) + ")" : "");
     popup("success", "Wajah terverifikasi!", "Halo " + (out.name || "") + "! Sekarang kamu bisa absen.");
     vibrate(30);
     updateBtns();
@@ -844,7 +899,7 @@ async function scanFace() {
     popup("error", "Scan gagal", e.message);
   } finally {
     $("btnScan").disabled = false;
-    $("btnScan").textContent = "📷 Scan Wajah";
+    $("btnScan").textContent = "ðŸ“· Scan Wajah";
   }
 }
 $("btnScan").onclick = scanFace;
@@ -854,7 +909,7 @@ $("btnScan").onclick = scanFace;
 // ---------- absen ----------
 async function absen(type) {
   if (!state.employee) return;
-  if (state.faceEnabled && !state.face) { popup("error", "Scan wajah dulu", "Verifikasi wajah wajib sebelum absen — posisikan muka di lingkaran lalu tekan Scan Wajah."); return; }
+  if (state.faceEnabled && !state.face) { popup("error", "Scan wajah dulu", "Verifikasi wajah wajib sebelum absen â€” posisikan muka di lingkaran lalu tekan Scan Wajah."); return; }
   if (!state.coords) { popup("error", "Lokasi belum kebaca", "Izinkan GPS di browser kamu, atau pakai tombol tes."); return; }
   $("btnMasuk").disabled = $("btnPulang").disabled = true;
   try {
@@ -874,17 +929,17 @@ async function absen(type) {
     const out = await r.json();
     if (!r.ok) {
       if (out.distance_m !== undefined) {
-        popup("error", "Gagal — kamu di luar zona", "Posisimu gak ada di dalam bulatan toko. Deketin titik tokonya, pastikan titik birumu masuk lingkaran, terus coba absen lagi.");
+        popup("error", "Gagal â€” kamu di luar zona", "Posisimu gak ada di dalam bulatan toko. Deketin titik tokonya, pastikan titik birumu masuk lingkaran, terus coba absen lagi.");
       } else {
         popup("error", "Absen gagal", out.message || "Coba lagi sebentar.");
       }
       return;
     }
     if (!out.logged) {
-      popup("info", "Barusan aja absen", "Absen " + type + " kamu udah kecatat beberapa detik lalu — gak perlu dobel.");
+      popup("info", "Barusan aja absen", "Absen " + type + " kamu udah kecatat beberapa detik lalu â€” gak perlu dobel.");
       return;
     }
-    // struk absen (receipt) — data dari record yang baru disimpan server
+    // struk absen (receipt) â€” data dari record yang baru disimpan server
     const rec = out.record || {};
     popup("success",
       type === "masuk" ? "Absen Masuk Berhasil!" : "Absen Pulang Berhasil!",
@@ -892,10 +947,10 @@ async function absen(type) {
       [
         ["Nama", (rec.employee && rec.employee.name) || state.employee.name],
         ["Waktu", rec.created_at ? new Date(rec.created_at).toLocaleTimeString("id-ID") : new Date().toLocaleTimeString("id-ID")],
-        ["Toko", (rec.store && rec.store.name) || (state.store ? state.store.name : "—")],
-        ["Jarak", rec.distance_m != null ? "±" + Math.round(rec.distance_m) + " m" : "—"],
-        ["IP", state.ip || "—"],
-        ["GPS", state.coords.acc != null ? "±" + Math.round(state.coords.acc) + " m" : "—"],
+        ["Toko", (rec.store && rec.store.name) || (state.store ? state.store.name : "â€”")],
+        ["Jarak", rec.distance_m != null ? "Â±" + Math.round(rec.distance_m) + " m" : "â€”"],
+        ["IP", state.ip || "â€”"],
+        ["GPS", state.coords.acc != null ? "Â±" + Math.round(state.coords.acc) + " m" : "â€”"],
       ]);
     vibrate([40, 60, 40]);
     loadHistory();
@@ -945,7 +1000,7 @@ async function loadHistory() {
   if (!window.isSecureContext) {
     $("gpsVal").textContent = "NO HTTPS";
     $("gpsDot").className = "sdot bad";
-    $("loc").textContent = "⚠️ GPS diblokir browser — halaman gak secure. Buka halaman absen via HTTPS.";
+    $("loc").textContent = "âš ï¸ GPS diblokir browser â€” halaman gak secure. Buka halaman absen via HTTPS.";
   } else {
     startGps();
   }
@@ -954,7 +1009,7 @@ async function loadHistory() {
   try {
     const j = await jget("/api/my-ip");
     state.ip = j.ip || null;
-    $("ipVal").textContent = state.ip || "—";
+    $("ipVal").textContent = state.ip || "â€”";
     $("ipDot").className = "sdot ok";
   } catch (e) {
     $("ipVal").textContent = "IP: ?";
