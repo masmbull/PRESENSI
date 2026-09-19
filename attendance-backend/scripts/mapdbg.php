@@ -43,6 +43,11 @@ setTimeout(async () => {
         st.push('glcanvas=' + (glc ? ('ada ' + glc.width + 'x' + glc.height) : 'HILANG'));
         const paths = document.querySelectorAll('#map path.leaflet-interactive');
         st.push('svgpaths=' + paths.length);
+        const mr = document.getElementById('map').getBoundingClientRect();
+        st.push('mapRect=' + Math.round(mr.left) + ',' + Math.round(mr.top) + ',' + Math.round(mr.right) + ',' + Math.round(mr.bottom));
+        // urutan z-index pane: kalau overlay/marker di bawah tilePane, circle+pin ketutup basemap
+        st.push('z=' + ['tilePane','overlayPane','shadowPane','markerPane']
+          .map(p => p + ':' + (m.map.getPane(p) ? getComputedStyle(m.map.getPane(p)).zIndex : 'x')).join(','));
       }
     }
     st.push('state.store=' + ((typeof state !== 'undefined' && state.store) ? state.store.name : 'null'));

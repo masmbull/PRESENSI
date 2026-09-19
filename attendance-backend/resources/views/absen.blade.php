@@ -194,9 +194,11 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
 .leaflet-container{background:var(--card2)}
 .leaflet-control-attribution{font-size:8px;background:rgba(5,8,13,.72);color:var(--dim)}
 .leaflet-control-attribution a{color:var(--dim)}
-/* maplibre canvas selalu di belakang overlay leaflet (circle, pin) */
+/* maplibre dirender di dalam tilePane (z 200). Pane overlay (400) & marker (600)
+   default Leaflet sudah di atasnya — JANGAN override z-index pane, kalau
+   diturunin ke 2 circle zona + pin user ketutup basemap. */
 .maplibregl-canvas{position:relative !important;z-index:0 !important}
-.leaflet-overlay-pane,.leaflet-marker-pane{z-index:2 !important}
+.leaflet-gl-layer{position:relative;z-index:0}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
 </style>
 </head>
