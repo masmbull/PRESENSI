@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#05080d">
 <title>Presensi SPG</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.0/maplibre-gl.min.css" integrity="sha384-GriUtmHM/C5kppqM+je9BCInk5YLY4k8/MEXQNSB9gE0BLi6af+iFZlypsIX+LE6" crossorigin="">
 <style>
 :root{
 --bg:#05080d; --card:rgba(15,22,34,.62); --card2:#0a111b; --line:rgba(148,178,214,.14);
@@ -189,6 +190,9 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
 .leaflet-container{background:var(--card2)}
 .leaflet-control-attribution{font-size:8px;background:rgba(5,8,13,.72);color:var(--dim)}
 .leaflet-control-attribution a{color:var(--dim)}
+/* maplibre canvas selalu di belakang overlay leaflet (circle, pin) */
+.maplibregl-canvas{position:relative !important;z-index:0 !important}
+.leaflet-overlay-pane,.leaflet-marker-pane{z-index:2 !important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
 </style>
 </head>
@@ -322,7 +326,9 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
     <button id="mOk" type="button">OK</button>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha384-NElt3Op+9NBMCYaef5HxeJmU4Xeard/Lku8ek6hoPTvYkQPh3zLIrJP7KiRocsxO" crossorigin=""></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.0/maplibre-gl.min.js" integrity="sha384-/fkW0eF+JadmqTh/3DP/LoBDPsacir3SNbnZ8aD7sozuTkUVhgCNHPSBfJura3aL" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js" integrity="sha384-tXYNKOHx4T02jMP7YYCtBxPIv1B5gaA5mcVPBzqMp6d7VzWzxJgI2aWF/nJLrQdS" crossorigin=""></script>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -648,9 +654,12 @@ function initMap() {
   }
   $("map").innerHTML = "";
   geo.map = L.map("map", { zoomControl: false });
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    maxZoom: 19,
-    attribution: "&copy; OpenStreetMap &copy; CARTO",
+  // Basemap OpenFreeMap (open source, MIT, tanpa API key) dirender via MapLibre GL.
+  // Plugin resmi maplibre-gl-leaflet njalanin GL engine di dalam Leaflet,
+  // jadi circle / pin / fitBounds Leaflet tetap jalan tanpa perubahan.
+  geo.gl = L.maplibreGL({
+    style: "https://tiles.openfreemap.org/styles/dark",
+    updateWhenIdle: true,
   }).addTo(geo.map);
   geo.map.setView([-2.5, 118], 4); // Indonesia
   geo.ready = true;
