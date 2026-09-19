@@ -26,7 +26,7 @@ fi
 
 echo "==> [1/8] Paket sistem (nginx, PHP 8.3, Composer, Python)"
 sudo apt-get update -y
-if ! apt-cache show php8.3-fpm >/dev/null 2>&1; then
+if ! apt-cache show php8.4-fpm >/dev/null 2>&1; then
   echo "    PHP 8.3 gak ada di repo default (Ubuntu 22.04) — nambahin PPA ondrej/php"
   sudo apt-get install -y software-properties-common
   sudo add-apt-repository -y ppa:ondrej/php
@@ -36,8 +36,8 @@ sudo apt-get install -y \
   ca-certificates curl git unzip nginx sqlite3 \
   python3 python3-venv python3-pip \
   composer \
-  php8.3-fpm php8.3-cli php8.3-mbstring php8.3-xml php8.3-curl \
-  php8.3-sqlite3 php8.3-gd php8.3-zip php8.3-bcmath php8.3-intl
+  php8.4-fpm php8.4-cli php8.4-mbstring php8.4-xml php8.4-curl \
+  php8.4-sqlite3 php8.4-gd php8.4-zip php8.4-bcmath php8.4-intl
 
 echo "==> [2/8] Swap (instance RAM kecil butuh ini buat ONNX)"
 if [ "$(free -m | awk '/^Mem:/{print $2}')" -lt 3500 ] && [ -z "$(swapon --show)" ]; then
@@ -132,5 +132,5 @@ echo "✅ Server siap. Lanjutan manual:"
 echo "   1) Cloudflare DNS : A  attendance  ->  <IP-EC2>  (Proxied)"
 echo "   2) Cloudflare SSL : mode Full (strict) + pasang Origin Certificate ke /etc/nginx/ssl/"
 echo "   3) Ganti kunci    : FACEID_API_KEY di $APP_DIR/attendance-backend/.env, lalu:"
-echo "                       cd $APP_DIR/attendance-backend && php artisan config:cache && sudo systemctl restart php8.3-fpm"
+echo "                       cd $APP_DIR/attendance-backend && php artisan config:cache && sudo systemctl restart php8.4-fpm"
 echo "   Panduan lengkap   : $APP_DIR/deployment/README.md"
