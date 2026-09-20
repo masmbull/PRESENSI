@@ -20,6 +20,10 @@
   input[type=text],input[type=email],input[type=password]{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:#0a111b;color:var(--txt);font:inherit;font-size:14.5px;outline:none;transition:border-color .14s,box-shadow .14s}
   input[type=text]:focus,input[type=email]:focus,input[type=password]:focus{border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
   .err{border-color:rgba(248,113,113,.55)!important;box-shadow:0 0 0 3px rgba(248,113,113,.14)!important}
+  .pw{position:relative}
+  .pw input{padding-right:46px}
+  .eye{position:absolute;top:50%;right:5px;transform:translateY(-50%);width:36px;height:34px;border:0;border-radius:9px;background:transparent;color:var(--dim);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .eye:hover,.eye[aria-pressed=true]{color:var(--txt);background:rgba(148,178,214,.12)}
   .msg{padding:11px 13px;border-radius:11px;background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.3);color:#fecaca;font-size:13px;margin:6px 0 4px}
   .btn{width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#0ea56b,#059669);color:#022c22;box-shadow:0 6px 18px rgba(52,211,153,.28)}
   .btn:hover{filter:brightness(1.06)}
@@ -50,7 +54,10 @@
       <input id="email" name="email" type="email" autocomplete="email" value="{{ old('email') }}" required>
 
       <label class="fld" for="password">Kata sandi</label>
-      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <div class="pw">
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button type="button" class="eye" id="eye" aria-label="Tampilkan kata sandi" aria-pressed="false" title="Tampilkan kata sandi">👁️</button>
+      </div>
 
       <button type="submit" class="btn">Masuk</button>
     </form>
@@ -58,7 +65,26 @@
     <div class="foot">
       Bantuan admin: hubungi penanggung jawab sistem.<br>
       <b>Role akses:</b> admin · manager · supervisor
+      {{-- Hint kredensial cuma muncul di dev (APP_DEBUG=true). Di produksi baris ini hilang. --}}
+      @if (config('app.debug'))
+        <br><b>Dev:</b> {{ config('faceid.admin_email') }} / {{ config('faceid.admin_password') ?: 'admin123' }}
+      @endif
     </div>
   </div>
+  <script>
+    (function () {
+      var pw = document.getElementById('password'), eye = document.getElementById('eye');
+      // Takarir: mata nggak boleh ngilangin fokus input (biar alur isi form gak keganggu).
+      eye.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      eye.addEventListener('click', function () {
+        var tampil = pw.type === 'password';
+        pw.type = tampil ? 'text' : 'password';
+        eye.setAttribute('aria-pressed', String(tampil));
+        eye.title = tampil ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi';
+        eye.textContent = tampil ? '🙈' : '👁️';
+        pw.focus();
+      });
+    })();
+  </script>
 </body>
 </html>

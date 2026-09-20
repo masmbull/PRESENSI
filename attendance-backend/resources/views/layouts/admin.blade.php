@@ -1,12 +1,39 @@
 @php
+    // Menu sidebar dibikin di sini biar gampang di-gate per role.
+    $cu = request()->attributes->get('admin_user');
+
     $nav = [
-        'presensi' => [
-            ['label' => 'Ringkasan hari ini', 'href' => route('admin.dashboard'), 'ico' => '📊', 'on' => request()->routeIs('admin.dashboard')],
-            ['label' => 'Riwayat absen & export', 'href' => route('admin.absensi'), 'ico' => '🗂️', 'on' => request()->routeIs('admin.absensi')],
+        [
+            'label' => 'Presensi',
+            'items' => [
+                ['label' => 'Ringkasan hari ini', 'href' => route('admin.dashboard'), 'ico' => '📊', 'on' => request()->routeIs('admin.dashboard')],
+                ['label' => 'Riwayat absen & export', 'href' => route('admin.absensi'), 'ico' => '🗂️', 'on' => request()->routeIs('admin.absensi')],
+            ],
         ],
-        'master' => [
-            ['label' => 'Kelola wajah & karyawan', 'href' => '/kelola-wajah', 'ico' => '🧑‍💼', 'on' => request()->is('kelola-wajah*')],
-            ['label' => 'Halaman absen SPG', 'href' => '/', 'ico' => '📱', 'on' => false, 'blank' => true],
+        [
+            'label' => 'Master & alat',
+            'items' => [
+                ['label' => 'Kelola wajah & karyawan', 'href' => '/kelola-wajah', 'ico' => '🧑‍💼', 'on' => request()->is('kelola-wajah*')],
+                ['label' => 'Halaman absen SPG', 'href' => '/', 'ico' => '📱', 'on' => false, 'blank' => true],
+            ],
+        ],
+    ];
+
+    // Menu khusus role admin — manager/supervisor nggak lihat ini.
+    if ($cu && $cu->isAdmin()) {
+        $nav[] = [
+            'label' => 'Khusus admin',
+            'items' => [
+                ['label' => 'Kelola akun admin', 'href' => route('admin.pengguna'), 'ico' => '👥', 'on' => request()->routeIs('admin.pengguna')],
+            ],
+        ];
+    }
+
+    // Semua role yang bisa login boleh ganti password sendiri.
+    $nav[] = [
+        'label' => 'Akun saya',
+        'items' => [
+            ['label' => 'Keamanan akun', 'href' => route('admin.akun'), 'ico' => '🔒', 'on' => request()->routeIs('admin.akun')],
         ],
     ];
 @endphp
@@ -86,16 +113,13 @@ tbody tr:hover{background:rgba(148,178,214,.05)}
     <div class="logo">🪪</div>
     <div><b>Presensi SPG</b><span>Admin panel</span></div>
   </div>
-  <div class="navlab">Presensi</div>
-  @foreach ($nav['presensi'] as $n)
+  @foreach ($nav as $group)
+  <div class="navlab">{{ $group['label'] }}</div>
+  @foreach ($group['items'] as $n)
   <a class="nav {{ $n['on'] ? 'on' : '' }}" href="{{ $n['href'] }}" @if (! empty($n['blank'])) target="_blank" rel="noopener" @endif><i>{{ $n['ico'] }}</i> {{ $n['label'] }}</a>
   @endforeach
-  <div class="navlab">Master &amp; alat</div>
-  @foreach ($nav['master'] as $n)
-  <a class="nav {{ $n['on'] ? 'on' : '' }}" href="{{ $n['href'] }}" @if (! empty($n['blank'])) target="_blank" rel="noopener" @endif><i>{{ $n['ico'] }}</i> {{ $n['label'] }}</a>
   @endforeach
   <footer>
-    @php $cu = request()->attributes->get('admin_user'); @endphp
     @if ($cu)
       <div style="margin-bottom:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;gap:10px">
         <div class="logo" style="width:34px;height:34px;font-size:15px;border-radius:10px;flex:none">{{ strtoupper(substr($cu->name, 0, 1)) }}</div>

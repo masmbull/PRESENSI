@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
      * diinput dari web (/kelola-wajah), bukan dari seeder.
      *
      * Email default: admin@presensi.local (override via ADMIN_EMAIL di .env)
-     * Password     : FACEID_ADMIN_PASSWORD di .env (fallback: admin12345)
+     * Password     : FACEID_ADMIN_PASSWORD di .env (fallback: admin123)
      */
     public function run(): void
     {
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name'     => 'Administrator',
                 'role'     => 'admin',
-                'password' => Hash::make((string) config('faceid.admin_password') ?: 'admin12345'),
+                'password' => Hash::make((string) config('faceid.admin_password') ?: 'admin123'),
             ],
         );
     }

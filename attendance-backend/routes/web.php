@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AttendanceAdminController;
 use App\Http\Controllers\Admin\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,20 @@ Route::middleware(['admin.auth', 'role:admin,manager,supervisor'])->prefix('admi
     Route::get('/absensi/{attendance}/foto', [AttendanceAdminController::class, 'photo'])->name('admin.absensi.foto');
     Route::post('/absensi/manual', [AttendanceAdminController::class, 'storeManual'])->name('admin.absensi.manual');
     Route::post('/absensi/{attendance}/hapus', [AttendanceAdminController::class, 'destroy'])->name('admin.absensi.hapus');
+});
+
+// ---------- Keamanan akun sendiri (semua role yang bisa login) ----------
+Route::middleware(['admin.auth', 'role:admin,manager,supervisor'])->prefix('admin')->group(function () {
+    Route::get('/akun', [AdminUserController::class, 'account'])->name('admin.akun');
+    Route::post('/akun/password', [AdminUserController::class, 'changePassword'])->name('admin.akun.password');
+});
+
+// ---------- Menu khusus admin: kelola akun ----------
+Route::middleware(['admin.auth', 'role:admin'])->prefix('admin/pengguna')->group(function () {
+    Route::get('/', [AdminUserController::class, 'index'])->name('admin.pengguna');
+    Route::post('/', [AdminUserController::class, 'store'])->name('admin.pengguna.tambah');
+    Route::post('/{user}', [AdminUserController::class, 'update'])->name('admin.pengguna.ubah');
+    Route::post('/{user}/hapus', [AdminUserController::class, 'destroy'])->name('admin.pengguna.hapus');
 });
 
 // ---------- Kelola wajah & master (kota/toko/karyawan) ----------
