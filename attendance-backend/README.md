@@ -16,6 +16,10 @@ php artisan migrate --seed
 - Web SPG (laptop): `http://localhost:8000`
 - HP: wajib **HTTPS** (GPS cuma jalan di secure context) — port `:8444`, cert self-signed (bikin di folder induk: `python mkcert.py`)
 
+**Login admin default:** `admin@presensi.local` / `admin123`
+(`ADMIN_EMAIL` + `FACEID_ADMIN_PASSWORD` di `.env`; `php artisan db:seed` bikin ulang
+akunnya idempotent). Ganti passwordnya sebelum dipakai di internet.
+
 > Face ID butuh **ai-service Python jalan** (folder induk, `python restart.py`, port 8090) —
 > Laravel cuma proxy. Kalau engine mati, scan wajah bilang "Engine wajah lagi mati".
 
@@ -90,6 +94,17 @@ Statusnya kesimpan di tabel `settings` dan **menang** atas nilai default di `.en
 
 Default awal diambil dari `FACEID_ENABLED`, `GEO_ENABLED`, `ATTENDANCE_COOLDOWN_ON`.
 Status juga dibales `/api/healthz` (`face_id`, `geofence`).
+
+## Catatan perbaikan
+
+- **Sesi admin gak dimigrasi ulang tiap request.** Middleware `AdminAuth` dulu pakai
+  `Auth::loginUsingId()`, yang di Laravel memanggil `session()->migrate(true)` — id
+  session lama dihapus di setiap request. Akibatnya `/kelola-wajah` yang nge-fetch
+  kota/toko/karyawan secara paralel saling menendang ke `/admin/login`, sehingga
+  daftar toko nyangkut “Memuat data…” dan hitungannya 0. Sekarang pakai
+  `Auth::setUser()` (`tests/Feature/AdminSessionTest.php` mengunci ini).
+- Aksi balik ke halaman sendiri (`/kelola-wajah` dll) tetap dianggap login, jadi
+  pagination + isi tabel kelihatan setelah data termuat.
 
 ## Struktur
 

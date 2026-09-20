@@ -22,9 +22,15 @@ class AdminAuth
         $adminId = $request->session()->get('admin_user');
 
         if (is_numeric($adminId)) {
-            $user = Auth::loginUsingId((int) $adminId);
+            $user = User::find((int) $adminId);
             if ($user) {
+                // setUser() — JANGAN loginUsingId(): SessionGuard::login() manggil
+                // session()->migrate(true), jadi id session lama dihapus di tiap request.
+                // Efeknya request paralel (halaman + fetch kota/toko/karyawan) saling
+                // nendang ke /admin/login. setUser cuma nyetel user di guard.
+                Auth::setUser($user);
                 $request->attributes->set('admin_user', $user);
+
                 return $next($request);
             }
             // User terhapus — buang session basi.
@@ -33,11 +39,13 @@ class AdminAuth
 
         if ($this->basicValid($request)) {
             // Backward compat Basic auth: biar RequireRole tetap dapat user,
-            // pakai akun admin pertama (kalau ada).
-            $user = Auth::loginUsingId((int) User::where('role', 'admin')->value('id'));
+            // pakai akun admin pertama (kalau ada). Juga tanpa nyentuh session.
+            $user = User::where('role', 'admin')->first();
+            Auth::setUser($user);
             if ($user) {
                 $request->attributes->set('admin_user', $user);
             }
+
             return $next($request);
         }
 

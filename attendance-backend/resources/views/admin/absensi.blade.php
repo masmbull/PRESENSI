@@ -16,7 +16,7 @@
 .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:10px}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
 .fld label,.fld>span{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-input,select{padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font:inherit;font-size:13px;width:100%}
+input,select{padding:10px 12px;border-radius:var(--r2);border:1px solid var(--line);background:var(--card2);color:var(--txt);font:inherit;font-size:13px;width:100%}
 input:focus,select:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
 input::placeholder{color:#4a5c70}
 select option{background:var(--card2)}
@@ -40,7 +40,7 @@ th.sortable:hover{color:var(--txt)}
 .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:12px;font-size:12px;color:var(--dim)}
 .modal-bg{position:fixed;inset:0;background:rgba(2,5,9,.74);z-index:150;display:none;align-items:flex-start;justify-content:center;padding:26px 14px;overflow-y:auto}
 .modal-bg.on{display:flex}
-.modal{width:100%;max-width:580px;background:#0c131f;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 30px 70px rgba(0,0,0,.65)}
+.modal{width:100%;max-width:580px;background:#101a28;border:1px solid var(--line2);border-radius:var(--r);padding:18px}
 .modal h3{margin:0 0 12px;font-size:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
 .close{background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer;line-height:1}
 .mrow{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid rgba(148,178,214,.08);font-size:12.5px}

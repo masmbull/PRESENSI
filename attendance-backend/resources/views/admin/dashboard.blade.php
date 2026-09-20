@@ -16,9 +16,9 @@
 @push('head')
 <style>
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:10px;margin-bottom:14px}
-.kpi{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 45%),var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:13px 14px}
 .klab{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.kval{display:block;font-size:26px;font-family:var(--mono);margin:5px 0 2px}
+.kval{display:block;font-size:26px;font-family:var(--mono);margin:5px 0 2px;letter-spacing:-.02em}
 .ksub{font-size:10.5px;color:var(--dim)}
 .k-acc .kval{color:var(--acc)} .k-sky .kval{color:var(--sky)} .k-mid .kval{color:var(--mid)}
 .k-warn .kval{color:var(--warn)} .k-vio .kval{color:var(--vio)} .k-txt .kval{color:var(--txt)}
