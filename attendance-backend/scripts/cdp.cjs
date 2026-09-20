@@ -12,6 +12,7 @@ const opt = (k, d) => {
 };
 const shot = opt('shot', '');
 const waitMs = parseInt(opt('wait', '5000'), 10);
+const size = opt('size', '1600,2200');
 const evals = args.filter((a) => a.startsWith('--eval=')).map((a) => a.slice(7));
 const cred = opt('user', ''); // "email:password" → login dulu lewat fetch di halaman.
 
@@ -21,7 +22,7 @@ const profile = require('os').tmpdir() + '\\edge-cdp-' + process.pid;
 
 const edge = spawn(EDGE, [
   '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-  '--remote-debugging-port=' + PORT, '--user-data-dir=' + profile, '--window-size=1600,2200',
+  '--remote-debugging-port=' + PORT, '--user-data-dir=' + profile, '--window-size=' + size,
   'about:blank',
 ], { stdio: 'ignore' });
 

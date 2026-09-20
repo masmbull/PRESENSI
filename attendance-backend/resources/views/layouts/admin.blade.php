@@ -75,8 +75,8 @@ button.nav.feat[data-on="1"] .fsw::after{transform:translateX(15px);background:v
 button.nav.feat[disabled]{opacity:.55;cursor:wait}
 .side footer{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--line);font-size:10.5px;color:var(--dim);line-height:1.65}
 /* ---------- main ---------- */
-.main{margin-left:248px;padding:22px 24px 70px;max-width:1440px}
-.top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.main{margin-left:248px;padding:0 24px 70px;max-width:1440px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:40;margin:0 -24px 18px;padding:16px 24px 12px;background:linear-gradient(180deg,var(--bg) 72%,rgba(5,8,13,0));border-bottom:1px solid var(--line)}
 h1{font-size:19px;margin:0}
 .sub{margin:4px 0 0;font-size:12px;color:var(--dim)}
 .acts{display:flex;gap:8px;flex-wrap:wrap}
@@ -116,7 +116,8 @@ tbody tr:hover{background:rgba(151,181,217,.06)}
 .side.open{transform:none}
 .backdrop.on{display:block}
 .burger{display:block}
-.main{margin-left:0;padding:64px 14px 70px}
+.main{margin-left:0;padding:56px 14px 70px}
+.top{margin:0 -14px 16px;padding:14px 14px 11px}
 }
 </style>
 @stack('head')
