@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Support\Features;
 use App\Support\Geo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,8 +43,8 @@ class AttendanceController extends Controller
         $employee = Employee::with('store')->find($data['employee_id']);
         $type = $data['type'] ?? 'masuk';
 
-        // Gate 1 — Face ID (dimatikan nyala lewat FACEID_ENABLED di .env).
-        if (config('faceid.enabled')) {
+        // Gate 1 — Face ID (nyala/mati runtime dari sidebar admin; default .env).
+        if (Features::on('faceid')) {
             if (empty($data['face_key'])) {
                 return response()->json([
                     'ok' => false,
@@ -74,7 +75,8 @@ class AttendanceController extends Controller
         }
         $distance = Geo::distanceMeters((float) $data['lat'], (float) $data['lon'], (float) $store->lat, (float) $store->lon);
         $radius = (float) ($store->radius_m ?? config('faceid.radius'));
-        if ($distance > $radius) {
+        $geofence = Features::on('geofence');
+        if ($geofence && $distance > $radius) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Di luar radius toko — jarakmu ±'.round($distance).' m dari titik (maks '.round($radius).' m)',
@@ -85,7 +87,7 @@ class AttendanceController extends Controller
         }
 
         // Cooldown anti dobel-klik per karyawan + jenis (masuk/pulang).
-        $cooldown = max(0, (int) config('faceid.cooldown'));
+        $cooldown = Features::on('cooldown') ? max(0, (int) config('faceid.cooldown')) : 0;
         if (! ($data['force'] ?? false) && $cooldown > 0) {
             $last = Attendance::where('employee_id', $employee->id)->where('type', $type)->latest('id')->first();
             if ($last !== null && $last->created_at->diffInSeconds(now()) < $cooldown) {
@@ -108,7 +110,7 @@ class AttendanceController extends Controller
             'lon' => $data['lon'],
             'acc' => $data['acc'] ?? null,
             'distance_m' => round($distance, 1),
-            'within_radius' => true,
+            'within_radius' => $distance <= $radius,
             'device' => $data['device'] ?? null,
             'ip' => $clientIp,
             'face_key' => $data['face_key'] ?? null,

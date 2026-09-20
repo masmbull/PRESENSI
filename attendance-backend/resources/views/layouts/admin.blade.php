@@ -61,6 +61,17 @@ a{color:var(--sky);text-decoration:none}
 .nav i{font-style:normal;font-size:15px;width:20px;text-align:center;flex:none}
 .nav:hover{color:var(--txt);background:rgba(148,178,214,.07)}
 .nav.on{color:var(--acc);background:linear-gradient(135deg,rgba(52,211,153,.16),rgba(56,189,248,.08));border-color:rgba(52,211,153,.32)}
+/* saklar fitur di sidebar */
+button.nav.feat{width:100%;font:inherit;text-align:left;cursor:pointer;background:transparent}
+button.nav.feat .fnm{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+button.nav.feat .fnm small{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:700}
+button.nav.feat[data-on="1"] .fnm small{color:var(--acc)}
+button.nav.feat[data-on="1"]{color:var(--txt);border-color:rgba(52,211,153,.22);background:rgba(52,211,153,.06)}
+.fsw{position:relative;width:34px;height:19px;border-radius:999px;background:rgba(148,178,214,.18);border:1px solid var(--line);flex:none;transition:background .18s}
+.fsw::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--dim);transition:transform .18s,background .18s}
+button.nav.feat[data-on="1"] .fsw{background:rgba(52,211,153,.28)}
+button.nav.feat[data-on="1"] .fsw::after{transform:translateX(15px);background:var(--acc)}
+button.nav.feat[disabled]{opacity:.55;cursor:wait}
 .side footer{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--line);font-size:10.5px;color:var(--dim);line-height:1.65}
 /* ---------- main ---------- */
 .main{margin-left:248px;padding:22px 24px 70px;max-width:1440px}
@@ -119,6 +130,16 @@ tbody tr:hover{background:rgba(148,178,214,.05)}
   <a class="nav {{ $n['on'] ? 'on' : '' }}" href="{{ $n['href'] }}" @if (! empty($n['blank'])) target="_blank" rel="noopener" @endif><i>{{ $n['ico'] }}</i> {{ $n['label'] }}</a>
   @endforeach
   @endforeach
+    @if ($cu && $cu->isAdmin())
+    <div class="navlab">Fitur</div>
+    @foreach (\App\Support\Features::list() as $f)
+    <button type="button" class="nav feat" data-feat="{{ $f['key'] }}" data-on="{{ $f['on'] ? '1' : '0' }}" title="{{ $f['ket'] }}">
+      <i>{{ $f['on'] ? '🟢' : '⚪' }}</i>
+      <span class="fnm">{{ $f['label'] }}<small>{{ $f['on'] ? 'aktif' : 'nonaktif' }}</small></span>
+      <span class="fsw" aria-hidden="true"></span>
+    </button>
+    @endforeach
+    @endif
   <footer>
     @if ($cu)
       <div style="margin-bottom:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;gap:10px">
@@ -133,9 +154,9 @@ tbody tr:hover{background:rgba(148,178,214,.05)}
         </form>
       </div>
     @endif
-    Zona waktu: {{ config('app.timezone') }}<br>
+    Zona waktu: {{ config('app.timezone') }} (WIB UTC+7)<br>
     Radius default: {{ (int) config('faceid.radius') }} m<br>
-    Face ID: {{ config('faceid.enabled') ? 'aktif' : 'nonaktif' }}
+    Face ID: {{ \App\Support\Features::on('faceid') ? 'aktif' : 'nonaktif' }}
   </footer>
 </aside>
 <div class="backdrop" id="backdrop"></div>
@@ -190,6 +211,29 @@ async function api(url, body) {
 }
 $('burger').onclick = () => { $('side').classList.add('open'); $('backdrop').classList.add('on'); };
 $('backdrop').onclick = () => { $('side').classList.remove('open'); $('backdrop').classList.remove('on'); };
+
+// ---------- saklar fitur di sidebar (admin only) ----------
+function paintFeatures(list) {
+  (list || []).forEach((f) => {
+    const b = document.querySelector('button.feat[data-feat="' + f.key + '"]');
+    if (!b) return;
+    b.dataset.on = f.on ? '1' : '0';
+    b.querySelector('i').textContent = f.on ? '🟢' : '⚪';
+    b.querySelector('.fnm small').textContent = f.on ? 'aktif' : 'nonaktif';
+  });
+}
+document.querySelectorAll('button.feat').forEach((b) => {
+  b.onclick = async () => {
+    const on = b.dataset.on !== '1';
+    b.disabled = true;
+    try {
+      const j = await api('/admin/fitur/' + b.dataset.feat, { on });
+      paintFeatures(j.features);
+      toast(j.message, 'ok');
+    } catch (e) { toast(e.message, 'err'); }
+    b.disabled = false;
+  };
+});
 </script>
 @stack('scripts')
 </body>

@@ -161,6 +161,8 @@ th.sortable:hover{color:var(--txt)}
 @push('scripts')
 <script>
 const RANGE = @json($range);
+// Semua tanggal/jam di halaman ini WIB (Asia/Jakarta) — lokasi device gak ngaruh.
+const TZ = @json(config('app.timezone'));
 let ALL = [], VIEW = [], page = 1, perPage = 50, sortKey = 'at', sortDir = 'desc', current = null;
 
 const SORTS = {
@@ -424,11 +426,11 @@ document.getElementById('quick').addEventListener('click', (ev) => {
     $('fFrom').value = iso(now);
     $('fTo').value = iso(now);
   } else if (q === 'month') {
-    $('fFrom').value = iso(new Date(now.getFullYear(), now.getMonth(), 1));
+    $('fFrom').value = iso(now).slice(0, 7) + '-01';
     $('fTo').value = iso(now);
   } else {
     const days = parseInt(q, 10);
-    $('fFrom').value = iso(new Date(now.getTime() - (days - 1) * 86400000));
+    $('fFrom').value = shiftIso(iso(now), -(days - 1));
     $('fTo').value = iso(now);
   }
   document.querySelectorAll('#quick .qbtn').forEach((x) => x.classList.toggle('on', x === b));
@@ -456,11 +458,21 @@ const XL_COLS = [
 ];
 
 function localIso(d) {
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  // en-CA + timeZone = format YYYY-MM-DD di zona WIB.
+  return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: TZ }).format(d);
+}
+function hhmmWib(d) {
+  return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: TZ }).format(d);
+}
+// WIB selalu UTC+7 (tanpa DST) — aritmetika tanggal aman pakai UTC.
+function shiftIso(iso, days) {
+  const d = new Date(iso + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
 }
 function stamp() {
   const d = new Date();
-  return localIso(d).split('-').reverse().join('/') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  return localIso(d).split('-').reverse().join('/') + ' ' + hhmmWib(d) + ' WIB';
 }
 function filterInfo() {
   const parts = ['Rentang: ' + ($('fFrom').value || 'semua') + ' → ' + ($('fTo').value || 'sekarang')];
@@ -577,7 +589,7 @@ async function fillManualEmployees() {
 function openManual() {
   const now = new Date();
   $('mDate').value = localIso(now);
-  $('mTime').value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  $('mTime').value = hhmmWib(now);
   $('mStore').value = $('fStore').value || '';
   $('mNote').value = '';
   $('manualBg').classList.add('on');

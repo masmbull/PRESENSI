@@ -192,6 +192,44 @@ class FaceManagementController extends Controller
         return response()->json(['ok' => true, 'employee' => $employee->fresh()->load('store'), 'engine' => $face], 201);
     }
 
+    /** POST /kelola-wajah/hapus-satu — hapus face ID satu karyawan (dropdown zona bahaya). */
+    public function clearOne(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'employee_id' => 'required|integer|exists:employees,id',
+        ]);
+
+        $employee = Employee::findOrFail($data['employee_id']);
+        $faceKey = $employee->face_key;
+
+        if ($faceKey === null) {
+            return response()->json(['ok' => false, 'message' => $employee->name.' belum punya wajah terdaftar.'], 422);
+        }
+
+        // Ambil slot di engine dulu; kalau engine mati, face_key TETAP gak dilepas
+        // biar gak ninggalin wajah nyangkut yang gak bisa dilacak.
+        try {
+            $res = Http::connectTimeout(5)->timeout(30)->delete(rtrim((string) config('faceid.api_base'), '/').'/api/pro/faces/'.urlencode($faceKey));
+        } catch (\Throwable $e) {
+            return response()->json(['ok' => false, 'message' => 'Engine wajah tidak bisa dihubungi.'], 503);
+        }
+
+        if ($res->status() === 404) {
+            // Slot udah gak ada di engine — lepas face_key aja biar konsisten.
+            $employee->update(['face_key' => null]);
+
+            return response()->json(['ok' => true, 'message' => 'Wajah '.$employee->name.' sudah tidak ada di engine. face_key dilepas.']);
+        }
+
+        if ($res->failed()) {
+            return response()->json(['ok' => false, 'message' => 'Engine gagal menghapus wajah (HTTP '.$res->status().').'], 502);
+        }
+
+        $employee->update(['face_key' => null]);
+
+        return response()->json(['ok' => true, 'message' => 'Wajah '.$employee->name.' dihapus. Karyawan, toko, dan riwayat absen tetap ada.']);
+    }
+
     /** POST /kelola-wajah/hapus — hapus SEMUA wajah engine + lepas face_key. */
     public function clear(Request $request): JsonResponse
     {

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AttendanceAdminController;
+use App\Http\Controllers\Admin\FeatureController;
 use App\Http\Controllers\Admin\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,12 @@ Route::middleware(['admin.auth', 'role:admin'])->prefix('admin/pengguna')->group
     Route::post('/{user}/hapus', [AdminUserController::class, 'destroy'])->name('admin.pengguna.hapus');
 });
 
+// ---------- Menu khusus admin: saklar fitur ----------
+Route::middleware(['admin.auth', 'role:admin'])->prefix('admin/fitur')->group(function () {
+    Route::get('/', [FeatureController::class, 'index'])->name('admin.fitur');
+    Route::post('/{key}', [FeatureController::class, 'toggle'])->name('admin.fitur.toggle');
+});
+
 // ---------- Kelola wajah & master (kota/toko/karyawan) ----------
 Route::middleware(['admin.auth', 'role:admin,manager'])->prefix('kelola-wajah')->group(function () {
     Route::get('/', [\App\Http\Controllers\FaceManagementController::class, 'index']);
@@ -49,5 +56,6 @@ Route::middleware(['admin.auth', 'role:admin,manager'])->prefix('kelola-wajah')-
     Route::post('/lokasi', [\App\Http\Controllers\FaceManagementController::class, 'location']);
     Route::post('/karyawan', [\App\Http\Controllers\FaceManagementController::class, 'createEmployee']);
     Route::post('/daftar', [\App\Http\Controllers\FaceManagementController::class, 'enroll']);
+    Route::post('/hapus-satu', [\App\Http\Controllers\FaceManagementController::class, 'clearOne']);
     Route::post('/hapus', [\App\Http\Controllers\FaceManagementController::class, 'clear']);
 });

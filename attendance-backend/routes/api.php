@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\FaceController;
 use App\Http\Controllers\Api\MasterController;
+use App\Support\Features;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,7 +14,9 @@ Route::middleware('api.key')->group(function () {
         'ok' => true,
         'app' => config('app.name'),
         'time' => now()->toIso8601String(),
-        'face_id' => (bool) config('faceid.enabled'),
+        'timezone' => config('app.timezone'),
+        'face_id' => Features::on('faceid'),
+        'geofence' => Features::on('geofence'),
         'radius_m' => (int) config('faceid.radius'),
     ]));
 

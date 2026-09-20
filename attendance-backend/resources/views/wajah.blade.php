@@ -39,9 +39,11 @@
 .kpi .g .n{color:var(--acc)}.kpi .r .n{color:var(--warn)}.kpi .s .n{color:var(--sky)}
 .tools{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:12px}
 @media(min-width:720px){.tools{grid-template-columns:1.4fr 1fr}}
-.emp-list{display:flex;flex-direction:column;gap:8px;max-height:520px;overflow-y:auto;padding-right:2px}
-.emp-list::-webkit-scrollbar{width:8px}
-.emp-list::-webkit-scrollbar-thumb{background:rgba(148,178,214,.18);border-radius:99px}
+.emp-list{display:flex;flex-direction:column;gap:8px;min-height:0;padding-right:2px}
+.smallpager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:11.5px;color:var(--dim)}
+.smallpager button{padding:6px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--dim);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.smallpager button:hover:not(:disabled){color:var(--txt)}
+.smallpager button:disabled{opacity:.4;cursor:not-allowed}
 .emp-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--card2);cursor:pointer;transition:border-color .16s,background .16s}
 .emp-row:hover{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.06)}
 .emp-row.static{cursor:default}
@@ -135,6 +137,13 @@
             <tbody id="storeRows"><tr><td colspan="4" class="empty">Memuat data…</td></tr></tbody>
           </table>
         </div>
+        <div class="smallpager">
+          <span id="storePageInfo">—</span>
+          <span style="display:flex;gap:6px">
+            <button type="button" id="storePrev">‹</button>
+            <button type="button" id="storeNext">›</button>
+          </span>
+        </div>
       </section>
 
       <section class="card">
@@ -144,6 +153,13 @@
           <select id="fltStore"><option value="">semua toko</option></select>
         </div>
         <div class="emp-list" id="empList"><div class="empty">Memuat data…</div></div>
+        <div class="smallpager">
+          <span id="empPageInfo">—</span>
+          <span style="display:flex;gap:6px">
+            <button type="button" id="empPrev">‹</button>
+            <button type="button" id="empNext">›</button>
+          </span>
+        </div>
         <div class="hint">Klik satu baris → langsung pindah ke tab <b>Daftar Wajah</b> dengan karyawan itu terpilih.</div>
       </section>
     </div>
@@ -178,6 +194,13 @@
     <section class="card">
       <h2><span>Belum punya wajah</span><span class="pill p-warn" id="cNoFace">0 orang</span></h2>
       <div class="emp-list" id="noFaceList"><div class="empty">Memuat data…</div></div>
+      <div class="smallpager">
+        <span id="noFacePageInfo">—</span>
+        <span style="display:flex;gap:6px">
+          <button type="button" id="noFacePrev">‹</button>
+          <button type="button" id="noFaceNext">›</button>
+        </span>
+      </div>
       <div class="hint">Klik nama di atas untuk langsung memilihnya di form pendaftaran wajah.</div>
     </section>
   </div>
@@ -186,8 +209,20 @@
 <!-- ================== BAHAYA ================== -->
 <div class="kw-pane" id="pDanger">
   <section class="card danger narrow">
-    <h2><span>⚠️ Zona bahaya</span></h2>
+    <h2><span>⚠️ Zona bahaya · hapus 1 wajah</span></h2>
+    <p class="hint" style="margin-top:0">Hapus <b>face ID satu karyawan</b> dari engine — karyawan, toko, dan riwayat absennya <b>tetap ada</b>. Berguna kalau wajah salah orang / perlu didaftarkan ulang.</p>
+    <label class="fld"><span class="flbl">Karyawan</span>
+      <select id="delFaceEmp"><option value="">-- pilih karyawan --</option></select>
+    </label>
+    <button class="btn warn" id="btnHapusSatu" type="button">Hapus face ID karyawan ini</button>
+  </section>
+
+  <section class="card danger narrow">
+    <h2><span>⚠️ Zona bahaya · hapus semua</span></h2>
     <p class="hint" style="margin-top:0">Menghapus <b>semua wajah</b> di engine dan melepas <b>face_key</b> seluruh karyawan. Data karyawan, toko, kota, dan riwayat absen <b>tidak</b> ikut terhapus.</p>
+    <label class="fld"><span class="flbl">Ketik <b>HAPUS SEMUA WAJAH</b> buat konfirmasi</span>
+      <input id="delAllConfirm" placeholder="HAPUS SEMUA WAJAH" autocomplete="off">
+    </label>
     <button class="btn warn" id="btnHapus" type="button">Hapus semua wajah engine</button>
   </section>
 </div>
@@ -201,6 +236,9 @@
   'use strict';
   const $ = (id) => document.getElementById(id);
   const D = { cities: [], stores: [], employees: [] };
+  // 6 baris/halaman biar daftar toko/karyawan fit 1 layar tanpa scroll.
+  const PER = 6;
+  const pg = { store: 1, emp: 1, noFace: 1 };
   let stream = null, imageB64 = '';
 
   /* ---------- tab ---------- */
@@ -238,6 +276,19 @@
     return st ? emp.name + ' — ' + st : emp.name;
   }
 
+  /* ---------- pagination kecil (maks PER baris per halaman) ---------- */
+  function slice(items, which) {
+    const pages = Math.max(1, Math.ceil(items.length / PER));
+    if (pg[which] > pages) pg[which] = pages;
+    if (pg[which] < 1) pg[which] = 1;
+    return items.slice((pg[which] - 1) * PER, pg[which] * PER);
+  }
+  function paintPager(which, infoId, prevId, nextId, shown, total) {
+    $(infoId).textContent = total === 0 ? 'tidak ada data'
+      : 'hal ' + pg[which] + ' / ' + Math.max(1, Math.ceil(total / PER)) + ' · ' + shown + ' dari ' + total;
+    $(prevId).disabled = pg[which] <= 1;
+    $(nextId).disabled = pg[which] >= Math.max(1, Math.ceil(total / PER));
+  }
   function fillSelect(sel, items, placeholder) {
     const cur = sel.value;
     sel.innerHTML = '';
@@ -268,10 +319,19 @@
     fillSelect($('empStore'), storeOpts, '-- pilih toko --');
     fillSelect($('fltStore'), storeOpts, 'semua toko');
     fillSelect($('faceEmp'), D.employees.map((e) => ({ id: e.id, label: empLabel(e) })), '-- pilih karyawan --');
+    fillSelect($('delFaceEmp'), D.employees.filter((e) => e.face_key).map((e) => ({ id: e.id, label: empLabel(e) })), '-- pilih karyawan --');
 
+    renderStores();
+
+    renderEmpList();
+    renderNoFace(noFace);
+  }
+
+  function renderStores() {
+    const rowsNow = slice(D.stores, 'store');
     const tb = $('storeRows');
     tb.innerHTML = D.stores.length ? '' : '<tr><td colspan="4" class="empty">Belum ada toko.</td></tr>';
-    D.stores.forEach((s) => {
+    rowsNow.forEach((s) => {
       const tr = document.createElement('tr');
       tr.innerHTML = '<td><b>' + esc(s.name) + '</b>' + (s.radius_m ? ' <span class="pill p-mute">' + s.radius_m + ' m</span>' : '') + '</td>'
         + '<td class="dim">' + esc(s.city?.name ?? '-') + '</td>'
@@ -279,9 +339,7 @@
         + '<td><span class="pill p-sky">' + (s.employees_count ?? 0) + '</span></td>';
       tb.appendChild(tr);
     });
-
-    renderEmpList();
-    renderNoFace(noFace);
+    paintPager('store', 'storePageInfo', 'storePrev', 'storeNext', rowsNow.length, D.stores.length);
   }
 
   function renderEmpList() {
@@ -289,10 +347,11 @@
     const f = $('fltStore').value;
     const list = D.employees.filter((e) =>
       (!q || e.name.toLowerCase().includes(q)) && (!f || String(e.store_id) === f));
+    const rowsNow = slice(list, 'emp');
     $('cShown').textContent = list.length + ' tampil';
     const box = $('empList');
     box.innerHTML = list.length ? '' : '<div class="empty">Tidak ada yang cocok.</div>';
-    list.forEach((e) => {
+    rowsNow.forEach((e) => {
       const row = document.createElement('div');
       row.className = 'emp-row';
       row.innerHTML = '<div class="av ' + (e.face_key ? '' : 'no') + '">' + esc((e.name[0] || '?').toUpperCase()) + '</div>'
@@ -306,12 +365,14 @@
       };
       box.appendChild(row);
     });
+    paintPager('emp', 'empPageInfo', 'empPrev', 'empNext', rowsNow.length, list.length);
   }
 
   function renderNoFace(noFace) {
+    const rowsNow = slice(noFace, 'noFace');
     const box = $('noFaceList');
     box.innerHTML = noFace.length ? '' : '<div class="empty">Semua karyawan sudah punya wajah 🎉</div>';
-    noFace.forEach((e) => {
+    rowsNow.forEach((e) => {
       const row = document.createElement('div');
       row.className = 'emp-row';
       row.innerHTML = '<div class="av no">' + esc((e.name[0] || '?').toUpperCase()) + '</div>'
@@ -320,6 +381,7 @@
       row.onclick = () => { $('faceEmp').value = String(e.id); toast('Karyawan dipilih, lanjut foto wajah.', 'ok'); };
       box.appendChild(row);
     });
+    paintPager('noFace', 'noFacePageInfo', 'noFacePrev', 'noFaceNext', rowsNow.length, noFace.length);
   }
   /* ---------- aksi kota / toko / karyawan ---------- */
   $('btnKota').onclick = async () => {
@@ -369,8 +431,14 @@
     } catch (err) { toast(err.message, 'err'); }
   };
 
-  $('empSearch').oninput = renderEmpList;
-  $('fltStore').onchange = renderEmpList;
+  $('empSearch').oninput = () => { pg.emp = 1; renderEmpList(); };
+  $('fltStore').onchange = () => { pg.emp = 1; renderEmpList(); };
+  $('storePrev').onclick = () => { pg.store--; renderStores(); };
+  $('storeNext').onclick = () => { pg.store++; renderStores(); };
+  $('empPrev').onclick = () => { pg.emp--; renderEmpList(); };
+  $('empNext').onclick = () => { pg.emp++; renderEmpList(); };
+  $('noFacePrev').onclick = () => { pg.noFace--; renderNoFace(D.employees.filter((e) => !e.face_key)); };
+  $('noFaceNext').onclick = () => { pg.noFace++; renderNoFace(D.employees.filter((e) => !e.face_key)); };
   /* ---------- foto: file / kamera ---------- */
   function setImage(b64) {
     imageB64 = b64;
@@ -435,13 +503,34 @@
   };
 
   /* ---------- zona bahaya ---------- */
+  // Hapus face ID satu karyawan (dropdown).
+  $('btnHapusSatu').onclick = async () => {
+    const id = $('delFaceEmp').value;
+    if (!id) return toast('Pilih karyawan dulu.', 'err');
+    const opt = $('delFaceEmp').selectedOptions[0];
+    if (!confirm('Hapus face ID ' + (opt ? opt.textContent : 'karyawan ini') + '?')) return;
+    const btn = $('btnHapusSatu');
+    btn.disabled = true; btn.textContent = 'Menghapus…';
+    try {
+      const j = await api('/kelola-wajah/hapus-satu', { employee_id: parseInt(id, 10) });
+      toast(j.message, 'ok');
+      await loadAll();
+    } catch (err) { toast(err.message, 'err'); }
+    btn.disabled = false; btn.textContent = 'Hapus face ID karyawan ini';
+  };
+
+  // Hapus semua — server minta konfirmasi teks, jadi ikut dikirim (dulu tombolnya
+  // selalu gagal 422 karena field confirm gak pernah dikirim).
   $('btnHapus').onclick = async () => {
+    const confirmText = $('delAllConfirm').value.trim();
+    if (confirmText !== 'HAPUS SEMUA WAJAH') return toast('Ketik HAPUS SEMUA WAJAH dulu buat konfirmasi.', 'err');
     if (!confirm('Hapus SEMUA wajah di engine? face_key semua karyawan dilepas.')) return;
     const btn = $('btnHapus');
     btn.disabled = true; btn.textContent = 'Menghapus…';
     try {
-      const j = await api('/kelola-wajah/hapus', {});
+      const j = await api('/kelola-wajah/hapus', { confirm: confirmText });
       toast(j.message, j.ok ? 'ok' : 'err');
+      $('delAllConfirm').value = '';
       await loadAll();
     } catch (err) { toast(err.message, 'err'); }
     btn.disabled = false; btn.textContent = 'Hapus semua wajah engine';

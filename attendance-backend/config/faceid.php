@@ -12,6 +12,10 @@ return [
     // lewat kolom stores.radius_m.
     'radius' => env('GEO_RADIUS_DEFAULT', 150),
 
+    // Default saklar "Geo location" di sidebar admin (bisa diubah runtime dari
+    // tabel settings tanpa deploy).
+    'geofence' => env('GEO_ENABLED', true),
+
     // ---------- Engine wajah (ai-service Python) ----------
     // Base URL engine MITO buat /api/face/verify (proxy dari HP).
     'api_base' => env('FACE_API_BASE', 'http://127.0.0.1:8090'),
@@ -29,5 +33,8 @@ return [
     // Jeda minimal antar-catat absen per karyawan per jenis masuk/pulang
     // (detik) — anti dobel-klik.
     'cooldown' => env('ATTENDANCE_COOLDOWN', 60),
+
+    // Default saklar "Anti dobel-klik" (runtime, tabel settings).
+    'cooldown_on' => env('ATTENDANCE_COOLDOWN_ON', true),
 
 ];

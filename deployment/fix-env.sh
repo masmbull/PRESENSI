@@ -15,6 +15,7 @@ sed -i \
   -e "s|^APP_ENV=.*|APP_ENV=production|" \
   -e "s|^APP_DEBUG=.*|APP_DEBUG=false|" \
   -e "s|^APP_URL=.*|APP_URL=https://$DOMAIN|" \
+  -e "s|^APP_TIMEZONE=.*|APP_TIMEZONE=Asia/Jakarta|" \
   -e "s|^LOG_LEVEL=.*|LOG_LEVEL=warning|" \
   -e "s|^FACEID_ENABLED=.*|FACEID_ENABLED=false|" \
   -e "s|^FACE_API_BASE=.*|FACE_API_BASE=http://127.0.0.1:8090|" \

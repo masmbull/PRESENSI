@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -215,6 +215,7 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
       </div>
     </div>
     <span class="chip">Face ID <b id="faceState">â€¦</b></span>
+    <span class="chip">Geo <b id="geoState">…</b></span>
   </header>
 
   <div class="statusbar">
@@ -341,7 +342,15 @@ const $ = (id) => document.getElementById(id);
 // API key diinject dari config server (FACEID_API_KEY) â€” kosong = mode dev terbuka
 const API_KEY = @json((string) config('faceid.api_key'));
 const API_HEADERS = API_KEY ? { "X-Api-Key": API_KEY } : {};
-const state = { city: null, store: null, stores: [], employees: [], employee: null, coords: null, faceEnabled: false, face: null, camStarted: false, ip: null };
+// Semua jam ditampilkan WIB (Asia/Jakarta), apa pun zona device-nya.
+const TZ = @json(config('app.timezone'));
+function fmtTime(v) {
+  return new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: TZ }).format(new Date(v));
+}
+function todayWib(d) {
+  return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: TZ }).format(d || new Date());
+}
+const state = { city: null, store: null, stores: [], employees: [], employee: null, coords: null, faceEnabled: false, geoEnabled: true, face: null, camStarted: false, ip: null };
 
 async function jget(url) {
   const r = await fetch(url, { headers: API_HEADERS });
@@ -775,7 +784,11 @@ function refreshZone() {
   if (!state.coords) return;
   gpsChip(state.coords.acc);
   $("gpsVal").textContent = "Â±" + Math.round(state.coords.acc || 0) + " m";
-  if (state.store) {
+  if (state.store && !state.geoEnabled) {
+    // Saklar "Geo location" dimatiin admin — server gak nolak absen di luar radius.
+    $("zone").className = "zone-in";
+    $("zone").textContent = "Geo location nonaktif — absen gak dibatasi radius toko";
+  } else if (state.store) {
     const d = distanceMeters(state.coords, state.store);
     const inside = d <= zoneRadius();
     $("zone").className = inside ? "zone-in" : "zone-out";
@@ -948,7 +961,7 @@ async function absen(type) {
       null,
       [
         ["Nama", (rec.employee && rec.employee.name) || state.employee.name],
-        ["Waktu", rec.created_at ? new Date(rec.created_at).toLocaleTimeString("id-ID") : new Date().toLocaleTimeString("id-ID")],
+        ["Waktu", rec.created_at ? fmtTime(rec.created_at) + " WIB" : fmtTime(new Date()) + " WIB"],
         ["Toko", (rec.store && rec.store.name) || (state.store ? state.store.name : "â€”")],
         ["Jarak", rec.distance_m != null ? "Â±" + Math.round(rec.distance_m) + " m" : "â€”"],
         ["IP", state.ip || "â€”"],
@@ -970,14 +983,14 @@ $("btnPulang").onclick = () => absen("pulang");
 async function loadHistory() {
   if (!state.employee) { $("hist").innerHTML = ""; return; }
   const d = new Date();
-  const today = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const today = todayWib(d);
   try {
     const rows = await jget("/api/attendances?employee_id=" + state.employee.id + "&date=" + today + "&limit=10");
     $("hist").innerHTML = rows.length
       ? '<div class="h">Riwayat hari ini</div>' + rows.map((r) =>
           '<div class="r"><span class="badge ' + (r.type === "masuk" ? "b-masuk" : "b-pulang") + '">' +
           (r.type === "masuk" ? "MASUK" : "PULANG") + '</span><b>' +
-          new Date(r.created_at).toLocaleTimeString("id-ID") + '</b>' +
+          fmtTime(r.created_at) + ' WIB</b>' +
           (r.ip ? '<span class="rip">' + r.ip + '</span>' : "") + '</div>'
         ).join("")
       : "";
@@ -991,7 +1004,9 @@ async function loadHistory() {
   try {
     const h = await jget("/api/healthz");
     state.faceEnabled = !!h.face_id;
+    state.geoEnabled = h.geofence !== false;
     $("faceState").textContent = state.faceEnabled ? "AKTIF" : "OFF";
+    $("geoState").textContent = state.geoEnabled ? "AKTIF" : "OFF";
     if (state.faceEnabled) $("faceNote").style.display = "inline";
   } catch (e) { $("faceState").textContent = "?"; }
 

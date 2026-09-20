@@ -42,7 +42,7 @@ php artisan migrate:fresh --seed   # reset semua data + build ulang
 
 | Method | Path | Fungsi |
 |---|---|---|
-| GET | `/api/healthz` | health + status face_id + radius |
+| GET | `/api/healthz` | health + status face_id/geofence + radius + timezone |
 | GET | `/api/cities` | daftar kota |
 | GET | `/api/stores?city_id=1` | toko di kota + jumlah SPG |
 | GET | `/api/employees?store_id=1` | SPG + ID karyawan |
@@ -67,6 +67,29 @@ Semua API bisa diminta mewajibkan header `X-Api-Key` kalau `FACEID_API_KEY` diis
 | `GEO_RADIUS_DEFAULT` | `150` | radius geofence default (m) |
 | `FACEID_API_KEY` | kosong | diisi → semua endpoint wajib `X-Api-Key` |
 | `ATTENDANCE_COOLDOWN` | `60` | jeda absen per karyawan per jenis (dtk) |
+| `APP_TIMEZONE` | `Asia/Jakarta` | zona waktu presensi (WIB) |
+| `GEO_ENABLED` | `true` | default saklar geo location di sidebar admin |
+| `ATTENDANCE_COOLDOWN_ON` | `true` | default saklar anti dobel-klik |
+
+## Zona waktu
+
+Semua jam presensi pakai **WIB (Asia/Jakarta, UTC+7)** — diatur `APP_TIMEZONE`
+(default `Asia/Jakarta`). Timestamp absen disimpan server dalam WIB dan tampilan
+jam di halaman absen/riwayat ikut zona ini, apa pun zona device penggunanya.
+
+## Saklar fitur (sidebar admin)
+
+Admin bisa nyalain/matiin fitur langsung dari sidebar panel — gak perlu deploy.
+Statusnya kesimpan di tabel `settings` dan **menang** atas nilai default di `.env`:
+
+| Saklar | Efek kalau mati |
+|---|---|
+| Face ID | absen tanpa verifikasi wajah |
+| Geo location | absen gak dibatasi radius toko |
+| Anti dobel-klik | cooldown antar-absen dilewati |
+
+Default awal diambil dari `FACEID_ENABLED`, `GEO_ENABLED`, `ATTENDANCE_COOLDOWN_ON`.
+Status juga dibales `/api/healthz` (`face_id`, `geofence`).
 
 ## Struktur
 
