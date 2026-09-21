@@ -1,10 +1,8 @@
-"""Detektor + pemperbaik mojibake double-encoding (UTF-8 dibaca cp1252, disimpan UTF-8).
+"""Detektor + pemperbaik mojibake double-encoding (UTF-8 dibaca cp1252/latin1).
 
-Contoh: 'ðŸ§ª' (F0 9F A7 AA dibaca cp1252) -> dikembalikan jadi U+1F9EA.
-
-Hanya menyentuh urutan lead byte E0-F4 (3/4-byte UTF-8: 'â', 'ð', 'ï', ...).
-Karakter 2-byte ('·', '©', '±', '×', ...) SENGAJA tidak disentuh karena di
-file kita semuanya sudah benar (single-encoded UTF-8).
+Kasus di repo ini (absen.blade.php):
+  1. 3/4-byte: 'ðŸ§ª' (F0 9F A7 AA dibaca cp1252, disimpan UTF-8) -> U+1F9EA.
+  2. 2-byte: 'Â·' (C2 B7 dibaca latin1, disimpan UTF-8) -> U+00B7.
 
 Pakai: python scripts/mojibake.py [apply] <file|dir> [...]
   tanpa 'apply' = dry-run (laporan saja, file tidak diubah).
@@ -47,6 +45,8 @@ def try_seq(text, i):
         n = 4
     elif 0xE0 <= b0 <= 0xEF:
         n = 3
+    elif 0xC2 <= b0 <= 0xDF:
+        n = 2  # contoh: 'Â·'/'Â±'/'Â©' = C2 xx dibaca latin1
     else:
         return None
     bs = [b0]
@@ -59,6 +59,8 @@ def try_seq(text, i):
         bs.append(b)
     if n == 4 and not (0x90 <= bs[1] <= 0xBF):
         return None
+    if n == 2 and bs[0] <= 0xC1:
+        return None  # C0/C1 bukan lead UTF-8 valid
     if n == 3:
         if bs[0] == 0xE0 and bs[1] < 0xA0:
             return None

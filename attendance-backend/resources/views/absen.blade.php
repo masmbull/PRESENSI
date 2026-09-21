@@ -211,7 +211,7 @@ footer{color:var(--dim);font-size:10px;text-align:center;margin:4px 0 10px;line-
       <div class="logo"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="#03291d" stroke-width="2.2"/><path d="M8 12.5l3 3 5.5-6" stroke="#03291d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div>
         <h1>Presensi SPG</h1>
-        <p class="sub">face id Â· geofence Â· realtime</p>
+        <p class="sub">face id · geofence · realtime</p>
       </div>
     </div>
     <span class="chip">Face ID <b id="faceState">…</b></span>
@@ -624,7 +624,7 @@ async function loadStores(cityId) {
   try {
     const rows = await jget("/api/stores?city_id=" + cityId);
     state.stores = rows;
-    ddStore.setItems(rows.map((s) => ({ v: s.id, label: s.name, sub: s.employees_count + " spg Â· radius " + s.radius_m + " m" })));
+    ddStore.setItems(rows.map((s) => ({ v: s.id, label: s.name, sub: s.employees_count + " spg · radius " + s.radius_m + " m" })));
     ddStore.setDisabled(false);
   } catch (e) {
     ddStore.setItems([]);
@@ -692,7 +692,7 @@ function initMap() {
       try {
         if (geo.gl) { geo.map.removeLayer(geo.gl); geo.gl = null; }
         geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-          maxZoom: 19, attribution: "Â© OpenStreetMap Â· HOT",
+          maxZoom: 19, attribution: "© OpenStreetMap · HOT",
         }).addTo(geo.map);
         geo.usingRaster = true;
       } catch (e) {}
@@ -700,7 +700,7 @@ function initMap() {
   } catch (e) {
     geo.failed = true;
     geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-      maxZoom: 19, attribution: "Â© OpenStreetMap Â· HOT",
+      maxZoom: 19, attribution: "© OpenStreetMap · HOT",
     }).addTo(geo.map);
     geo.usingRaster = true;
   }
@@ -783,7 +783,7 @@ function setUser(lat, lon, acc) {
 function refreshZone() {
   if (!state.coords) return;
   gpsChip(state.coords.acc);
-  $("gpsVal").textContent = "Â±" + Math.round(state.coords.acc || 0) + " m";
+  $("gpsVal").textContent = "±" + Math.round(state.coords.acc || 0) + " m";
   if (state.store && !state.geoEnabled) {
     // Saklar "Geo location" dimatiin admin — server gak nolak absen di luar radius.
     $("zone").className = "zone-in";
@@ -799,7 +799,7 @@ function refreshZone() {
     $("zone").className = "";
     $("zone").textContent = "";
   }
-  $("loc").textContent = "GPS aktif Â· IP " + (state.ip || "…");
+  $("loc").textContent = "GPS aktif · IP " + (state.ip || "…");
 }
 
 function startGps() {
@@ -835,8 +835,8 @@ $("btnCenter").onclick = () => {
   if (!geo.ready || !state.coords) { flash("err", "Lokasi belum kebaca."); return; }
   geo.map.setView([state.coords.lat, state.coords.lon], Math.max(geo.map.getZoom(), 16));
 };
-$("btnSimIn").onclick = () => sim(0.0001);   // Â±5 m dari titik → dalam zona
-$("btnSimOut").onclick = simFar;             // jauh Â±1.6-1.9 km dari titik → pasti luar zona
+$("btnSimIn").onclick = () => sim(0.0001);   // ±5 m dari titik → dalam zona
+$("btnSimOut").onclick = simFar;             // jauh ±1.6-1.9 km dari titik → pasti luar zona
 </script>
 
 <script>
@@ -963,9 +963,9 @@ async function absen(type) {
         ["Nama", (rec.employee && rec.employee.name) || state.employee.name],
         ["Waktu", rec.created_at ? fmtTime(rec.created_at) + " WIB" : fmtTime(new Date()) + " WIB"],
         ["Toko", (rec.store && rec.store.name) || (state.store ? state.store.name : "—")],
-        ["Jarak", rec.distance_m != null ? "Â±" + Math.round(rec.distance_m) + " m" : "—"],
+        ["Jarak", rec.distance_m != null ? "±" + Math.round(rec.distance_m) + " m" : "—"],
         ["IP", state.ip || "—"],
-        ["GPS", state.coords.acc != null ? "Â±" + Math.round(state.coords.acc) + " m" : "—"],
+        ["GPS", state.coords.acc != null ? "±" + Math.round(state.coords.acc) + " m" : "—"],
       ]);
     vibrate([40, 60, 40]);
     loadHistory();
