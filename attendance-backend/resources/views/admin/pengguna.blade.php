@@ -16,19 +16,6 @@
 @push('head')
 <style>
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
-.fld label,.fld>span{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-input,select{padding:10px 12px;border-radius:var(--r2);border:1px solid var(--line);background:var(--card2);color:var(--txt);font:inherit;font-size:13px;width:100%}
-input:focus,select:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
-select option{background:var(--card2)}
-.mini{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card2);color:var(--dim);font:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:color .15s,border-color .15s}
-.mini:hover{color:var(--txt);border-color:var(--line2)}
-.mini.warn{border-color:rgba(248,113,113,.3);color:#fca5a5}
-.mini.warn:hover{background:rgba(248,113,113,.12)}
-.modal-bg{position:fixed;inset:0;background:rgba(2,5,9,.74);z-index:150;display:none;align-items:flex-start;justify-content:center;padding:26px 14px;overflow-y:auto}
-.modal-bg.on{display:flex}
-.modal{width:100%;max-width:520px;background:#101a28;border:1px solid var(--line2);border-radius:var(--r);padding:18px}
-.modal h3{margin:0 0 12px;font-size:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.close{background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer;line-height:1}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:640px){.mgrid{grid-template-columns:1fr}}
 .mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}

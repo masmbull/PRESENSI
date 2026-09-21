@@ -105,6 +105,13 @@ Status juga dibales `/api/healthz` (`face_id`, `geofence`).
   `Auth::setUser()` (`tests/Feature/AdminSessionTest.php` mengunci ini).
 - Aksi balik ke halaman sendiri (`/kelola-wajah` dll) tetap dianggap login, jadi
   pagination + isi tabel kelihatan setelah data termuat.
+- **Toko yang sudah ada bisa diubah** (nama, kota, alamat, koordinat, radius) lewat
+  tombol **Ubah** di daftar toko tab Master data → `POST /kelola-wajah/lokasi/{store}`
+  (`FaceManagementController::updateStore`). Nama yang bentrok di kota yang sama
+  ditolak 422, jadi unique `(city_id, name)` tetap aman.
+- **Style form/modal dipindah ke layout admin** (`.fld`, `.fgrid`, `.mfoot`, `.mini`,
+  `.modal-bg`) supaya input di semua halaman admin pakai tema gelap, bukan default
+  browser. Halaman **Keamanan akun** dirapikan: kartu profil + kartu ganti password.
 
 ## Struktur
 

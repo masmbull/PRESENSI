@@ -54,6 +54,7 @@ Route::middleware(['admin.auth', 'role:admin,manager'])->prefix('kelola-wajah')-
     Route::get('/karyawan', [\App\Http\Controllers\FaceManagementController::class, 'employees']);
     Route::post('/kota', [\App\Http\Controllers\FaceManagementController::class, 'createCity']);
     Route::post('/lokasi', [\App\Http\Controllers\FaceManagementController::class, 'location']);
+    Route::post('/lokasi/{store}', [\App\Http\Controllers\FaceManagementController::class, 'updateStore']);
     Route::post('/karyawan', [\App\Http\Controllers\FaceManagementController::class, 'createEmployee']);
     Route::post('/daftar', [\App\Http\Controllers\FaceManagementController::class, 'enroll']);
     Route::post('/hapus-satu', [\App\Http\Controllers\FaceManagementController::class, 'clearOne']);

@@ -84,6 +84,52 @@ class FaceManagementController extends Controller
         return response()->json(['ok' => true, 'city' => $city, 'store' => $store->load('city')], 201);
     }
 
+    /**
+     * POST /kelola-wajah/lokasi/{store} — ubah toko yang sudah ada (nama/kota/alamat/koordinat/radius).
+     * Koordinat & nama ikut bisa diupdate; unique (city_id, name) dicek biar gak nabrak toko lain.
+     */
+    public function updateStore(Request $request, Store $store): JsonResponse
+    {
+        $data = $request->validate([
+            'city_id' => 'nullable|integer|exists:cities,id',
+            'city' => 'nullable|string|max:80',
+            'store' => 'required|string|max:120',
+            'address' => 'nullable|string|max:200',
+            'lat' => 'required|numeric|between:-90,90',
+            'lon' => 'required|numeric|between:-180,180',
+            'radius_m' => 'nullable|integer|min:10|max:5000',
+        ]);
+
+        if (empty($data['city_id']) && empty($data['city'])) {
+            throw ValidationException::withMessages(['city_id' => 'Pilih kota dulu, atau isi nama kota baru.']);
+        }
+
+        $city = ! empty($data['city_id'])
+            ? City::findOrFail($data['city_id'])
+            : City::firstOrCreate(['name' => trim((string) $data['city'])]);
+
+        $name = trim($data['store']);
+        $bentrok = Store::query()
+            ->where('city_id', $city->id)
+            ->where('id', '!=', $store->id)
+            ->whereRaw('lower(name) = ?', [mb_strtolower($name)])
+            ->exists();
+        if ($bentrok) {
+            throw ValidationException::withMessages(['store' => 'Toko dengan nama ini sudah ada di kota tersebut.']);
+        }
+
+        $store->update([
+            'city_id' => $city->id,
+            'name' => $name,
+            'address' => $data['address'] ?? null,
+            'lat' => $data['lat'],
+            'lon' => $data['lon'],
+            'radius_m' => $data['radius_m'] ?? (int) config('faceid.radius', 150),
+        ]);
+
+        return response()->json(['ok' => true, 'store' => $store->fresh()->load('city')]);
+    }
+
     /** GET /kelola-wajah/toko — daftar toko buat dropdown (tanpa API key). */
     public function stores(): JsonResponse
     {

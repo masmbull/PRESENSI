@@ -133,8 +133,8 @@
         <h2><span>Daftar toko</span><span class="pill p-mute" id="cStores">0</span></h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Toko</th><th>Kota</th><th>Koordinat</th><th>Karyawan</th></tr></thead>
-            <tbody id="storeRows"><tr><td colspan="4" class="empty">Memuat data…</td></tr></tbody>
+            <thead><tr><th>Toko</th><th>Kota</th><th>Alamat</th><th>Koordinat</th><th>Karyawan</th><th></th></tr></thead>
+            <tbody id="storeRows"><tr><td colspan="6" class="empty">Memuat data…</td></tr></tbody>
           </table>
         </div>
         <div class="smallpager">
@@ -228,6 +228,26 @@
 </div>
 
 <canvas id="shot" style="display:none"></canvas>
+
+<!-- modal ubah toko -->
+<div class="modal-bg" id="stBg">
+  <div class="modal">
+    <h3><span>Ubah toko</span><button type="button" class="close" id="stClose" aria-label="Tutup">×</button></h3>
+    <input type="hidden" id="stId">
+    <div class="fgrid">
+      <label class="fld span2"><span>Nama toko</span><input id="stName" maxlength="120" autocomplete="off"></label>
+      <label class="fld"><span>Kota</span><select id="stCity"></select></label>
+      <label class="fld"><span>Radius (m)</span><input id="stRadius" type="number" min="10" max="5000" placeholder="150"></label>
+      <label class="fld span2"><span>Alamat</span><input id="stAddr" maxlength="200" autocomplete="off" placeholder="cth: Jl. Basuki Rahmat No. 12"></label>
+      <label class="fld"><span>Latitude</span><input id="stLat" type="number" step="any"></label>
+      <label class="fld"><span>Longitude</span><input id="stLon" type="number" step="any"></label>
+    </div>
+    <div class="mfoot">
+      <button class="btn ghost" type="button" id="stCancel">Batal</button>
+      <button class="btn" type="button" id="stSave">Simpan perubahan</button>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -330,17 +350,66 @@
   function renderStores() {
     const rowsNow = slice(D.stores, 'store');
     const tb = $('storeRows');
-    tb.innerHTML = D.stores.length ? '' : '<tr><td colspan="4" class="empty">Belum ada toko.</td></tr>';
+    tb.innerHTML = D.stores.length ? '' : '<tr><td colspan="6" class="empty">Belum ada toko.</td></tr>';
     rowsNow.forEach((s) => {
       const tr = document.createElement('tr');
       tr.innerHTML = '<td><b>' + esc(s.name) + '</b>' + (s.radius_m ? ' <span class="pill p-mute">' + s.radius_m + ' m</span>' : '') + '</td>'
         + '<td class="dim">' + esc(s.city?.name ?? '-') + '</td>'
+        + '<td class="dim">' + (s.address ? esc(s.address) : '<span style="color:var(--dim2)">belum diisi</span>') + '</td>'
         + '<td class="mono dim" style="font-size:11px">' + (+s.lat).toFixed(5) + ', ' + (+s.lon).toFixed(5) + '</td>'
-        + '<td><span class="pill p-sky">' + (s.employees_count ?? 0) + '</span></td>';
+        + '<td><span class="pill p-sky">' + (s.employees_count ?? 0) + '</span></td>'
+        + '<td><button type="button" class="mini" data-editstore="' + s.id + '">Ubah</button></td>';
       tb.appendChild(tr);
     });
     paintPager('store', 'storePageInfo', 'storePrev', 'storeNext', rowsNow.length, D.stores.length);
   }
+
+  /* ---------- ubah toko (nama / kota / alamat / koordinat / radius) ---------- */
+  function openStore(id) {
+    const s = D.stores.find((x) => x.id === id);
+    if (!s) return;
+    $('stId').value = s.id;
+    $('stName').value = s.name;
+    $('stRadius').value = s.radius_m ?? '';
+    $('stAddr').value = s.address ?? '';
+    $('stLat').value = s.lat;
+    $('stLon').value = s.lon;
+    fillSelect($('stCity'), D.cities.map((c) => ({ id: c.id, label: c.name })), '-- pilih kota --');
+    $('stCity').value = String(s.city_id);
+    $('stBg').classList.add('on');
+    $('stName').focus();
+  }
+  function closeStore() { $('stBg').classList.remove('on'); }
+  $('stClose').onclick = closeStore;
+  $('stCancel').onclick = closeStore;
+  $('stBg').addEventListener('click', (ev) => { if (ev.target === $('stBg')) closeStore(); });
+  $('storeRows').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-editstore]');
+    if (b) openStore(parseInt(b.dataset.editstore, 10));
+  });
+  $('stSave').onclick = async () => {
+    const id = $('stId').value;
+    const body = {
+      city_id: $('stCity').value ? parseInt($('stCity').value, 10) : null,
+      store: $('stName').value.trim(),
+      address: $('stAddr').value.trim() || null,
+      lat: parseFloat($('stLat').value),
+      lon: parseFloat($('stLon').value),
+      radius_m: $('stRadius').value ? parseInt($('stRadius').value, 10) : null,
+    };
+    if (!body.store) return toast('Nama toko wajib diisi.', 'err');
+    if (!body.city_id) return toast('Pilih kota dulu.', 'err');
+    if (Number.isNaN(body.lat) || Number.isNaN(body.lon)) return toast('Latitude & longitude wajib angka.', 'err');
+    const btn = $('stSave');
+    btn.disabled = true;
+    try {
+      await api('/kelola-wajah/lokasi/' + id, body);
+      toast('Toko "' + body.store + '" diperbarui.', 'ok');
+      closeStore();
+      await loadAll();
+    } catch (err) { toast(err.message, 'err'); }
+    btn.disabled = false;
+  };
 
   function renderEmpList() {
     const q = $('empSearch').value.trim().toLowerCase();

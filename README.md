@@ -15,6 +15,7 @@ Backend **Laravel 13 + SQLite**, AI engine **MITO (ONNX)** di **Python/FastAPI**
 - ✅ Flow SPG: **Kota → Toko → Nama → muncul ID Karyawan → absen**
 - ✅ Verifikasi **wajah** opsional (selfie scan) — bisa dimatikan lewat config (`FACEID_ENABLED=false`)
 - ✅ Admin: kelola kota / toko / karyawan / wajah lewat web
+- ✅ Toko yang sudah ada bisa **diubah** (nama, kota, alamat, koordinat, radius) dari tab Master data — tombol **Ubah** di daftar toko
 - ✅ Saklar fitur di sidebar admin (Face ID / Geo location / anti dobel-klik) — aktif-nonaktif langsung, tanpa deploy
 - ✅ Semua jam presensi **WIB (Asia/Jakarta, UTC+7)**
 - ✅ Riwayat & rekap absen via API

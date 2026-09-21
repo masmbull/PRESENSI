@@ -111,6 +111,27 @@ tbody tr:hover{background:rgba(151,181,217,.06)}
 .toast{position:fixed;right:18px;bottom:18px;z-index:200;padding:12px 15px;border-radius:var(--r2);background:#101a28;border:1px solid var(--line2);font-size:12.5px;max-width:360px;display:none}
 .toast.ok{border-color:rgba(52,211,153,.4);color:#bbf7d0}
 .toast.err{border-color:rgba(248,113,113,.45);color:#fecaca}
+/* ---------- form & modal (dipakai bareng semua halaman admin) ---------- */
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld>span,.fld label{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.fld input,.fld select,.fld textarea{width:100%;padding:10px 12px;border-radius:var(--r2);border:1px solid var(--line);background:var(--card2);color:var(--txt);font:inherit;font-size:13px}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.fld input::placeholder,.fld textarea::placeholder{color:#4a5c70}
+.fld select option{background:var(--card2);color:var(--txt)}
+.fgrid{display:grid;grid-template-columns:1fr;gap:11px}
+@media (min-width:820px){.fgrid{grid-template-columns:1fr 1fr}.fgrid .span2{grid-column:1/-1}}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}
+.tiny{font-size:11px;color:var(--dim)}
+.mini{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card2);color:var(--dim);font:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:color .15s,border-color .15s;white-space:nowrap}
+.mini:hover{color:var(--txt);border-color:var(--line2)}
+.mini.warn{border-color:rgba(248,113,113,.3);color:#fca5a5}
+.mini.warn:hover{background:rgba(248,113,113,.12)}
+.modal-bg{position:fixed;inset:0;background:rgba(2,5,9,.74);z-index:150;display:none;align-items:flex-start;justify-content:center;padding:26px 14px;overflow-y:auto}
+.modal-bg.on{display:flex}
+.modal{width:100%;max-width:540px;background:#101a28;border:1px solid var(--line2);border-radius:var(--r);padding:18px}
+.modal h3{margin:0 0 14px;font-size:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.modal .close{background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer;line-height:1}
+.modal .close:hover{color:var(--txt)}
 @media (max-width:980px){
 .side{transform:translateX(-100%);transition:transform .22s;width:264px}
 .side.open{transform:none}
