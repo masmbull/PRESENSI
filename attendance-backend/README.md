@@ -16,9 +16,10 @@ php artisan migrate --seed
 - Web SPG (laptop): `http://localhost:8000`
 - HP: wajib **HTTPS** (GPS cuma jalan di secure context) — port `:8444`, cert self-signed (bikin di folder induk: `python mkcert.py`)
 
-**Login admin default:** `admin@presensi.local` / `admin123`
-(`ADMIN_EMAIL` + `FACEID_ADMIN_PASSWORD` di `.env`; `php artisan db:seed` bikin ulang
-akunnya idempotent). Ganti passwordnya sebelum dipakai di internet.
+**Login admin lokal:** email + password diambil dari `.env`
+(`ADMIN_EMAIL` + `FACEID_ADMIN_PASSWORD`) — `php artisan db:seed` bikin akunnya
+idempotent. **Ganti password bawaan sebelum dipakai di internet** — nilai default
+sengaja gak ditulis di repo ini.
 
 > Face ID butuh **ai-service Python jalan** (folder induk, `python restart.py`, port 8090) —
 > Laravel cuma proxy. Kalau engine mati, scan wajah bilang "Engine wajah lagi mati".

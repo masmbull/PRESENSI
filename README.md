@@ -2,7 +2,7 @@
 
 Proyek **presensi SPG (Sales Promotion Girl) seluruh Indonesia**: web absen masuk/pulang
 berbasis **lokasi GPS**, plus **verifikasi wajah** (AI face recognition) opsional.
-Backend **Laravel 13 + SQLite**, AI engine **MITO (ONNX)** di **Python/FastAPI**.
+Backend **Laravel + SQLite**, AI engine **MITO (ONNX)** di **Python/FastAPI**.
 
 > 🔒 Repo bersifat **public** — semua kredensial, cert, data biometrik/absensi,
 > `.env` asli, domain dan IP produksi **tidak ikut di-commit**. Setiap file config
@@ -27,12 +27,14 @@ Backend **Laravel 13 + SQLite**, AI engine **MITO (ONNX)** di **Python/FastAPI**
 ## Struktur
 
 ```
-attendance-backend/   Laravel 13 — web absensi + API (punya README sendiri)
+attendance-backend/   Laravel — web absensi + API (punya README sendiri)
 mito/                 engine face AI: detector, embedding, liveness, attributes
 models_pro/           model ONNX (~52 MB) — ikut repo biar clone langsung jalan
 static/               playground lama (face-api.js, jalan di browser)
 deployment/           panduan & skrip deploy produksi (placeholder-only)
 stores.json           data master toko (nama, kota, lat/lon) buat import
+DEVELOPMENT.md        arsitektur, konvensi, dependensi, cara test
+.github/workflows/    CI (GitHub Actions): phpunit + cek engine Python
 ```
 
 ## Quick start lokal
@@ -59,12 +61,17 @@ php artisan migrate --seed
 ```powershell
 # dari folder attendance-backend:
 php artisan stores:import    # import master toko dari stores.json (bikin kota otomatis)
-php artisan spg:seed         # seed SPG dummy per toko (ID SPG-001, ...)
+php artisan spg:seed         # seed SPG dummy per toko
+php artisan db:seed --class=Database\Seeders\EmployeeProfileSeeder
+#   → 8 baris contoh profil HRD di /admin/karyawan (idempotent, aman diulang)
 ```
+
+> Seeder & import **tidak** menampilkan data orang nyata di repo — semua contoh
+> di-generate/diambil dari file master lokal (`stores.json`), gak di-commit hasilnya.
 
 ## Deploy produksi
 
-Lihat **`deployment/README.md`** — panduan VPS/EC2 + Cloudflare. Semua nilai asli
+Lihat **`deployment/README.md`** — panduan VPS + Cloudflare. Semua nilai asli
 pakai placeholder; isi di server, jangan commit.
 
 ## Lisensi & status
