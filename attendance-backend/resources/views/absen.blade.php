@@ -6,7 +6,8 @@
 <meta name="theme-color" content="#05080d">
 <title>Presensi SPG</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="">
-<!-- Basemap raster gratis tanpa batas: OpenStreetMap HOT (operated by HOT, tile.openstreetmap.fr). Tanpa API key, tanpa kuota. -->
+<!-- Basemap: vektor OpenFreeMap (MapLibre GL, tanpa API key). Kalau GL gagal
+     (WebGL gak ada / diblokir), jatuh ke raster CARTO → OSM. -->
 <style>
 :root{
 --bg:#05080d; --card:rgba(15,22,34,.62); --card2:#0a111b; --line:rgba(148,178,214,.14);
@@ -674,7 +675,31 @@ function initMap() {
   }
   $("map").innerHTML = "";
   geo.map = L.map("map", { zoomControl: false, attributionControl: true });
-  geo.failed = false; geo.usingRaster = false;
+  geo.failed = false; geo.usingRaster = false; geo.rasterIdx = 0;
+
+  // Raster cadangan — daftar urut: kalau satu sumber mati/diblokir
+  // (tile.openstreetmap.fr sering 403/limit), otomatis pindah ke berikutnya.
+  const rasterSources = [
+    { url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      opt: { subdomains: "abcd", maxZoom: 20, attribution: "© OpenStreetMap · © CARTO" } },
+    { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      opt: { maxZoom: 19, attribution: "© OpenStreetMap" } },
+  ];
+  geo.useRaster = function (idx) {
+    if (geo.usingRaster && geo.rasterIdx === idx) return;
+    geo.usingRaster = true; geo.rasterIdx = idx; geo.rasterErr = 0;
+    try {
+      if (geo.raster) geo.map.removeLayer(geo.raster);
+      if (geo.gl) { geo.map.removeLayer(geo.gl); geo.gl = null; }
+      const s = rasterSources[idx];
+      geo.raster = L.tileLayer(s.url, s.opt).addTo(geo.map);
+      geo.raster.on("tileerror", () => {
+        geo.rasterErr = (geo.rasterErr || 0) + 1;
+        if (geo.rasterErr >= 6 && idx + 1 < rasterSources.length) geo.useRaster(idx + 1);
+      });
+    } catch (e) {}
+  };
+
   try {
     if (!L.maplibreGL) throw new Error("plugin maplibre-gl-leaflet belum termuat");
     // Basemap OpenFreeMap (open source, MIT, tanpa API key) dirender via MapLibre GL.
@@ -684,25 +709,20 @@ function initMap() {
       style: "https://tiles.openfreemap.org/styles/dark",
       updateWhenIdle: true,
     }).addTo(geo.map);
-    // Safety net: kalau style GL gagal 12 detik (offline / tile diblokir),
-    // jatuh ke raster OSM HOT yang ringan, biar zona + pin tetap kelihatan.
+    // GL gagal (WebGL gak ada / style keblokir) → langsung jatuh ke raster,
+    // gak nunggu timer. Timer tetap ada buat kasus "diam aja gak load".
+    try {
+      const glm = geo.gl.getMap();
+      glm.on("error", () => {
+        geo.glErr = (geo.glErr || 0) + 1;
+        if (geo.glErr >= 3 && !geo.usingRaster) geo.useRaster(0);
+      });
+    } catch (e2) {}
     clearTimeout(geo.rasterTimer);
-    geo.rasterTimer = setTimeout(() => {
-      if (!geo.ready || geo.usingRaster) return;
-      try {
-        if (geo.gl) { geo.map.removeLayer(geo.gl); geo.gl = null; }
-        geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-          maxZoom: 19, attribution: "© OpenStreetMap · HOT",
-        }).addTo(geo.map);
-        geo.usingRaster = true;
-      } catch (e) {}
-    }, 12000);
+    geo.rasterTimer = setTimeout(() => { if (!geo.usingRaster) geo.useRaster(0); }, 7000);
   } catch (e) {
     geo.failed = true;
-    geo.raster = L.tileLayer("https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-      maxZoom: 19, attribution: "© OpenStreetMap · HOT",
-    }).addTo(geo.map);
-    geo.usingRaster = true;
+    geo.useRaster(0);
   }
   geo.map.setView([-2.5, 118], 4); // Indonesia
   geo.ready = true;
