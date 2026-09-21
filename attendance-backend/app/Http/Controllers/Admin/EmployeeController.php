@@ -195,6 +195,7 @@ class EmployeeController extends Controller
     {
         $arr = $e->toArray();
         $arr['store_name'] = $e->store?->name;
+        $arr['city_id'] = $e->store?->city_id;
         $arr['city_name'] = $e->store?->city?->name;
         $arr['photo_url'] = $e->photo ? Storage::url($e->photo) : null;
         $arr['age'] = $e->age();

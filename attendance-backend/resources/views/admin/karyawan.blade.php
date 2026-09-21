@@ -89,8 +89,11 @@
     </div>
     <div class="fgrid" style="margin-top:12px">
       <div class="sect">Kepegawaian</div>
+      <label class="fld"><span>Kota penempatan</span>
+        <select id="iCity"><option value="">— pilih kota —</option>@foreach ($cities as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
+      </label>
       <label class="fld"><span>Toko penempatan</span>
-        <select id="iStore"><option value="">— pilih toko —</option>@foreach ($storesByCity as $cn => $list)<optgroup label="{{ $cn }}">@foreach ($list as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach</optgroup>@endforeach</select>
+        <select id="iStore" disabled><option value="">— pilih kota dulu —</option></select>
       </label>
       <label class="fld"><span>Jabatan / posisi</span><input id="iPosition" maxlength="60" placeholder="mis. SPG"></label>
       <label class="fld"><span>Departemen</span><input id="iDepartment" maxlength="60" placeholder="mis. Sales"></label>
@@ -232,6 +235,28 @@ function openDetail(r) {
 </script>
 <script>
 // ---------- form tambah/ubah ----------
+// Master kota → toko buat dropdown berjenjang di modal (pilih kota dulu, toko ke-filter).
+const STORE_LIST = @json($stores->map(fn ($s) => ['id' => $s->id, 'city_id' => $s->city_id, 'name' => $s->name]));
+
+function fillStores(cityId) {
+  const sel = $('iStore');
+  sel.innerHTML = '';
+  const ph = document.createElement('option');
+  ph.value = '';
+  ph.textContent = cityId ? '— tanpa toko —' : '— pilih kota dulu —';
+  sel.appendChild(ph);
+  if (!cityId) { sel.disabled = true; return; }
+  sel.disabled = false;
+  STORE_LIST.filter((s) => String(s.city_id) === String(cityId)).forEach((s) => {
+    const o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.name;
+    sel.appendChild(o);
+  });
+}
+
+$('iCity').addEventListener('change', () => { fillStores($('iCity').value); $('iStore').value = ''; });
+
 const TXT = [['iCode','employee_code'],['iNik','nik'],['iBirthPlace','birth_place'],['iPhone','phone'],['iEmail','email'],['iAddress','address'],
   ['iPosition','position'],['iDepartment','department'],['iJoin','join_date'],['iContractEnd','contract_end'],['iResign','resign_date'],
   ['iEmName','emergency_name'],['iEmRel','emergency_relation'],['iEmPhone','emergency_phone'],
@@ -243,6 +268,10 @@ function openForm(r) {
   const edit = !!r;
   $('fTitle').textContent = edit ? 'Ubah data — ' + r.name : 'Tambah karyawan';
   $('iName').value = edit ? r.name : '';
+  // Dropdown berjenjang: kota dulu, baru daftar tokonya keisi (urutan penting sebelum loop SEL).
+  const cid = (edit && r.city_id) ? String(r.city_id) : '';
+  $('iCity').value = cid;
+  fillStores(cid);
   TXT.forEach(([i, k]) => { $(i).value = (r && r[k]) || ''; });
   SEL.forEach(([i, k]) => { $(i).value = (r && (r[k] == null ? '' : String(r[k]))) || ''; });
   $('iFace').value = (r && r.has_face) ? 'terdaftar' : (r ? 'belum' : '—');
