@@ -112,6 +112,12 @@ Status juga dibales `/api/healthz` (`face_id`, `geofence`).
 - **Style form/modal dipindah ke layout admin** (`.fld`, `.fgrid`, `.mfoot`, `.mini`,
   `.modal-bg`) supaya input di semua halaman admin pakai tema gelap, bukan default
   browser. Halaman **Keamanan akun** dirapikan: kartu profil + kartu ganti password.
+- **Karyawan bisa diubah** (nama, kode karyawan, pindah toko) lewat tombol **Ubah**
+  di daftar karyawan → `POST /kelola-wajah/karyawan/{employee}`
+  (`FaceManagementController::updateEmployee`). `face_key` gak disentuh, jadi wajah
+  yang sudah didaftarkan tetap nyambung; nama kembar di toko yang sama ditolak 422.
+- **Daftar toko ada kotak cari** (nama / kota / alamat) biar gak perlu ngeklik
+  pagination 10 halaman buat nemu satu toko sebelum diubah.
 
 ## Struktur
 

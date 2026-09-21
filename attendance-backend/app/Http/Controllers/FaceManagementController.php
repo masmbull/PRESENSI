@@ -193,6 +193,39 @@ class FaceManagementController extends Controller
     }
 
     /**
+     * POST /kelola-wajah/karyawan/{employee} — ubah karyawan yang sudah ada:
+     * nama, kode karyawan, dan pindah toko. Dedupe (nama sama di toko sama) tetap dijaga.
+     */
+    public function updateEmployee(Request $request, Employee $employee): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:120',
+            'employee_code' => 'nullable|string|max:40|unique:employees,employee_code,'.$employee->id,
+            'store_id' => 'nullable|integer|exists:stores,id',
+        ]);
+
+        $name = trim($data['name']);
+        $storeId = $data['store_id'] ?? null;
+
+        $bentrok = Employee::query()
+            ->where('store_id', $storeId)
+            ->where('id', '!=', $employee->id)
+            ->whereRaw('lower(name) = ?', [mb_strtolower($name)])
+            ->exists();
+        if ($bentrok) {
+            throw ValidationException::withMessages(['name' => 'Karyawan dengan nama itu sudah ada di toko tersebut.']);
+        }
+
+        $employee->update([
+            'name' => $name,
+            'employee_code' => $data['employee_code'] ?? null,
+            'store_id' => $storeId,
+        ]);
+
+        return response()->json(['ok' => true, 'employee' => $employee->fresh()->load('store.city:id,name')]);
+    }
+
+    /**
      * POST /kelola-wajah/daftar — kirim foto ke engine untuk karyawan yang sudah ada.
      * Input: employee_id, photo (file) atau image (base64), store_id (opsional override).
      */

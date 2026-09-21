@@ -22,6 +22,9 @@
 .kw-pane.on{display:block}
 .kw-cols{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
 .kw-cols-2{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+/* min-width:0 → tabel ber-scroll di dalam kartu, gak melebarin halaman (mobile) */
+.kw-cols>div,.kw-cols-2>div{min-width:0}
+.table-wrap,.emp-row .nm{min-width:0}
 @media(min-width:1080px){.kw-cols{grid-template-columns:minmax(330px,1fr) minmax(430px,1.3fr)}.kw-cols-2{grid-template-columns:1fr 1fr}}
 .fld{display:block;margin-bottom:11px}
 .flbl{display:block;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
@@ -131,6 +134,9 @@
     <div>
       <section class="card">
         <h2><span>Daftar toko</span><span class="pill p-mute" id="cStores">0</span></h2>
+        <div class="tools" style="grid-template-columns:1fr">
+          <input id="storeSearch" placeholder="cari toko / kota / alamat… contoh: Semarang, Jalan, ALASKA" autocomplete="off">
+        </div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Toko</th><th>Kota</th><th>Alamat</th><th>Koordinat</th><th>Karyawan</th><th></th></tr></thead>
@@ -160,7 +166,7 @@
             <button type="button" id="empNext">›</button>
           </span>
         </div>
-        <div class="hint">Klik satu baris → langsung pindah ke tab <b>Daftar Wajah</b> dengan karyawan itu terpilih.</div>
+        <div class="hint">Klik satu baris → langsung pindah ke tab <b>Daftar Wajah</b> dengan karyawan itu terpilih. Tombol <b>Ubah</b> buat ganti nama, kode, atau pindah toko.</div>
       </section>
     </div>
   </div>
@@ -245,6 +251,24 @@
     <div class="mfoot">
       <button class="btn ghost" type="button" id="stCancel">Batal</button>
       <button class="btn" type="button" id="stSave">Simpan perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal ubah karyawan -->
+<div class="modal-bg" id="emBg">
+  <div class="modal">
+    <h3><span>Ubah karyawan</span><button type="button" class="close" id="emClose" aria-label="Tutup">×</button></h3>
+    <input type="hidden" id="emId">
+    <div class="fgrid">
+      <label class="fld span2"><span>Nama karyawan</span><input id="emName" maxlength="120" autocomplete="off"></label>
+      <label class="fld"><span>Kode karyawan (opsional)</span><input id="emCode" maxlength="40" autocomplete="off" placeholder="cth: SPG-001"></label>
+      <label class="fld"><span>Toko penempatan</span><select id="emStore"></select></label>
+    </div>
+    <p class="tiny" style="margin:12px 0 0">Wajah yang sudah didaftarkan tetap nyambung — yang berubah cuma data karyawannya. Kalau pindah toko, nama slot di engine dibiarkan seperti saat pendaftaran (keterangan di absen tetap ikut data di sini).</p>
+    <div class="mfoot">
+      <button class="btn ghost" type="button" id="emCancel">Batal</button>
+      <button class="btn" type="button" id="emSave">Simpan perubahan</button>
     </div>
   </div>
 </div>
@@ -348,9 +372,14 @@
   }
 
   function renderStores() {
-    const rowsNow = slice(D.stores, 'store');
+    const q = $('storeSearch').value.trim().toLowerCase();
+    const list = D.stores.filter((s) => !q
+      || s.name.toLowerCase().includes(q)
+      || (s.city?.name ?? '').toLowerCase().includes(q)
+      || (s.address ?? '').toLowerCase().includes(q));
+    const rowsNow = slice(list, 'store');
     const tb = $('storeRows');
-    tb.innerHTML = D.stores.length ? '' : '<tr><td colspan="6" class="empty">Belum ada toko.</td></tr>';
+    tb.innerHTML = list.length ? '' : '<tr><td colspan="6" class="empty">Tidak ada toko yang cocok.</td></tr>';
     rowsNow.forEach((s) => {
       const tr = document.createElement('tr');
       tr.innerHTML = '<td><b>' + esc(s.name) + '</b>' + (s.radius_m ? ' <span class="pill p-mute">' + s.radius_m + ' m</span>' : '') + '</td>'
@@ -361,7 +390,7 @@
         + '<td><button type="button" class="mini" data-editstore="' + s.id + '">Ubah</button></td>';
       tb.appendChild(tr);
     });
-    paintPager('store', 'storePageInfo', 'storePrev', 'storeNext', rowsNow.length, D.stores.length);
+    paintPager('store', 'storePageInfo', 'storePrev', 'storeNext', rowsNow.length, list.length);
   }
 
   /* ---------- ubah toko (nama / kota / alamat / koordinat / radius) ---------- */
@@ -411,6 +440,43 @@
     btn.disabled = false;
   };
 
+  /* ---------- ubah karyawan (nama / kode / pindah toko) ---------- */
+  function openEmp(id) {
+    const e = D.employees.find((x) => x.id === id);
+    if (!e) return;
+    $('emId').value = e.id;
+    $('emName').value = e.name;
+    $('emCode').value = e.employee_code ?? '';
+    fillSelect($('emStore'), D.stores.map((s) => ({ id: s.id, label: s.name + ' (' + (s.city?.name ?? '?') + ')' })), '-- tanpa toko --');
+    $('emStore').value = e.store_id ? String(e.store_id) : '';
+    $('emBg').classList.add('on');
+    $('emName').focus();
+  }
+  function closeEmp() { $('emBg').classList.remove('on'); }
+  $('emClose').onclick = closeEmp;
+  $('emCancel').onclick = closeEmp;
+  $('emBg').addEventListener('click', (ev) => { if (ev.target === $('emBg')) closeEmp(); });
+  $('emSave').onclick = async () => {
+    const id = $('emId').value;
+    const body = {
+      name: $('emName').value.trim(),
+      employee_code: $('emCode').value.trim() || null,
+      store_id: $('emStore').value ? parseInt($('emStore').value, 10) : null,
+    };
+    if (!body.name) return toast('Nama karyawan wajib diisi.', 'err');
+    const btn = $('emSave');
+    btn.disabled = true;
+    try {
+      await api('/kelola-wajah/karyawan/' + id, body);
+      toast('Karyawan "' + body.name + '" diperbarui.', 'ok');
+      closeEmp();
+      await loadAll();
+    } catch (err) { toast(err.message, 'err'); }
+    btn.disabled = false;
+  };
+
+  $('storeSearch').oninput = () => { pg.store = 1; renderStores(); };
+
   function renderEmpList() {
     const q = $('empSearch').value.trim().toLowerCase();
     const f = $('fltStore').value;
@@ -426,8 +492,11 @@
       row.innerHTML = '<div class="av ' + (e.face_key ? '' : 'no') + '">' + esc((e.name[0] || '?').toUpperCase()) + '</div>'
         + '<div class="nm"><b>' + esc(e.name) + '</b><span>#' + e.id + ' · ' + esc(storeName(e.store_id) ?? 'tanpa toko')
         + (e.employee_code ? ' · ' + esc(e.employee_code) : '') + '</span></div>'
-        + (e.face_key ? '<span class="badge b-ok">wajah ✓</span>' : '<span class="badge b-no">belum</span>');
-      row.onclick = () => {
+        + (e.face_key ? '<span class="badge b-ok">wajah ✓</span>' : '<span class="badge b-no">belum</span>')
+        + '<button type="button" class="mini" data-editemp="' + e.id + '">Ubah</button>';
+      row.onclick = (ev) => {
+        const b = ev.target.closest('[data-editemp]');
+        if (b) return openEmp(parseInt(b.dataset.editemp, 10));
         $('faceEmp').value = String(e.id);
         goTab('pWajah');
         toast('Karyawan terpilih: ' + empLabel(e), 'ok');

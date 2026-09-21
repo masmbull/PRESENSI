@@ -56,6 +56,7 @@ Route::middleware(['admin.auth', 'role:admin,manager'])->prefix('kelola-wajah')-
     Route::post('/lokasi', [\App\Http\Controllers\FaceManagementController::class, 'location']);
     Route::post('/lokasi/{store}', [\App\Http\Controllers\FaceManagementController::class, 'updateStore']);
     Route::post('/karyawan', [\App\Http\Controllers\FaceManagementController::class, 'createEmployee']);
+    Route::post('/karyawan/{employee}', [\App\Http\Controllers\FaceManagementController::class, 'updateEmployee']);
     Route::post('/daftar', [\App\Http\Controllers\FaceManagementController::class, 'enroll']);
     Route::post('/hapus-satu', [\App\Http\Controllers\FaceManagementController::class, 'clearOne']);
     Route::post('/hapus', [\App\Http\Controllers\FaceManagementController::class, 'clear']);
