@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AttendanceAdminController;
+use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\FeatureController;
 use App\Http\Controllers\Admin\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,16 @@ Route::middleware(['admin.auth', 'role:admin'])->prefix('admin/pengguna')->group
 Route::middleware(['admin.auth', 'role:admin'])->prefix('admin/fitur')->group(function () {
     Route::get('/', [FeatureController::class, 'index'])->name('admin.fitur');
     Route::post('/{key}', [FeatureController::class, 'toggle'])->name('admin.fitur.toggle');
+});
+
+// ---------- Data Karyawan HRD (profil lengkap) ----------
+Route::middleware(['admin.auth', 'role:admin,manager'])->prefix('admin/karyawan')->group(function () {
+    Route::get('/', [EmployeeController::class, 'index'])->name('admin.karyawan');
+    Route::get('/data', [EmployeeController::class, 'data'])->name('admin.karyawan.data');
+    Route::post('/', [EmployeeController::class, 'store'])->name('admin.karyawan.tambah');
+    Route::get('/{employee}', [EmployeeController::class, 'show'])->name('admin.karyawan.detail');
+    Route::post('/{employee}', [EmployeeController::class, 'update'])->name('admin.karyawan.ubah');
+    Route::post('/{employee}/hapus', [EmployeeController::class, 'destroy'])->name('admin.karyawan.hapus');
 });
 
 // ---------- Kelola wajah & master (kota/toko/karyawan) ----------

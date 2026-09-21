@@ -18,6 +18,7 @@ Backend **Laravel 13 + SQLite**, AI engine **MITO (ONNX)** di **Python/FastAPI**
 - ✅ Toko yang sudah ada bisa **diubah** (nama, kota, alamat, koordinat, radius) dari tab Master data — tombol **Ubah** di daftar toko
 - ✅ Karyawan juga bisa **diubah** (nama, kode, pindah toko) + **nonaktif/aktif** (resign tanpa hapus riwayat) + pencarian toko/kota/alamat di daftar toko
 - ✅ Toko kosong bisa **dihapus** (toko berisi riwayat/karyawan dilindungi)
+- ✅ Halaman **Data Karyawan** (`/admin/karyawan`): biodata lengkap ala HRD — NIK, TTL, kontak, alamat, kepegawaian (posisi/departemen/status/tanggal masuk & akhir kontrak), kontak darurat, bank, BPJS Kesehatan & Ketenagakerjaan, foto, masa kerja — dengan pencarian, filter toko, tambah/ubah/hapus (karyawan yang punya riwayat absen dilindungi), dan foto profil (upload → `storage/app/public/employees`)
 - ✅ Saklar fitur di sidebar admin (Face ID / Geo location / anti dobel-klik) — aktif-nonaktif langsung, tanpa deploy
 - ✅ Semua jam presensi **WIB (Asia/Jakarta, UTC+7)**
 - ✅ Riwayat & rekap absen via API

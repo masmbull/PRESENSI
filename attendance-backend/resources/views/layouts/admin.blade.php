@@ -13,6 +13,7 @@
         [
             'label' => 'Master & alat',
             'items' => [
+                ['label' => 'Data karyawan', 'href' => route('admin.karyawan'), 'ico' => '🪪', 'on' => request()->routeIs('admin.karyawan*')],
                 ['label' => 'Kelola wajah & karyawan', 'href' => '/kelola-wajah', 'ico' => '🧑‍💼', 'on' => request()->is('kelola-wajah*')],
                 ['label' => 'Halaman absen SPG', 'href' => '/', 'ico' => '📱', 'on' => false, 'blank' => true],
             ],
