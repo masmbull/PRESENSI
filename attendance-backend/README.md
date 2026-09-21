@@ -118,6 +118,18 @@ Status juga dibales `/api/healthz` (`face_id`, `geofence`).
   yang sudah didaftarkan tetap nyambung; nama kembar di toko yang sama ditolak 422.
 - **Daftar toko ada kotak cari** (nama / kota / alamat) biar gak perlu ngeklik
   pagination 10 halaman buat nemu satu toko sebelum diubah.
+- **Karyawan bisa dinonaktifkan** (mis. resign) tanpa hapus data: tombol
+  **Nonaktifkan** di daftar karyawan → `POST /kelola-wajah/karyawan/{employee}/aktif`
+  (`FaceManagementController::setEmployeeActive`). Yang nonaktif gak muncul lagi di
+  dropdown halaman absen SPG (`GET /api/employees` & `/no-face` cuma balikin yang
+  aktif) dan gak bisa absen (422), tapi **riwayat absen + wajahnya tetap**. Daftar
+  ulang nama yang nonaktif otomatis mengaktifkan lagi (gak bikin baris dobel).
+  Daftar karyawan ada filter status **aktif / nonaktif / semua**, plus badge
+  `nonaktif` di barisnya.
+- **Toko kosong bisa dihapus** (tombol **Hapus**) →
+  `POST /kelola-wajah/toko/{store}/hapus` (`FaceManagementController::deleteStore`).
+  Toko yang masih punya karyawan atau riwayat absen ditolak 422 biar laporan tetap
+  utuh.
 
 ## Struktur
 

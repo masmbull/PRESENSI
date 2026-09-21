@@ -41,7 +41,7 @@
 .kpi .l{font-size:9.5px;color:var(--dim);letter-spacing:.09em;text-transform:uppercase;margin-top:4px;font-weight:700}
 .kpi .g .n{color:var(--acc)}.kpi .r .n{color:var(--warn)}.kpi .s .n{color:var(--sky)}
 .tools{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:12px}
-@media(min-width:720px){.tools{grid-template-columns:1.4fr 1fr}}
+@media(min-width:720px){.tools{grid-template-columns:1.4fr 1fr 1fr}}
 .emp-list{display:flex;flex-direction:column;gap:8px;min-height:0;padding-right:2px}
 .smallpager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(151,181,217,.1);font-size:11.5px;color:var(--dim2)}
 .smallpager button{min-width:30px;height:28px;padding:0 9px;border-radius:8px;border:1px solid var(--line);background:var(--card2);color:var(--dim);font:inherit;font-size:13px;line-height:1;font-weight:700;cursor:pointer;transition:color .15s,border-color .15s}
@@ -157,6 +157,7 @@
         <div class="tools">
           <input id="empSearch" placeholder="cari nama karyawan…" autocomplete="off">
           <select id="fltStore"><option value="">semua toko</option></select>
+          <select id="fltActive"><option value="1">karyawan aktif</option><option value="0">nonaktif</option><option value="">semua status</option></select>
         </div>
         <div class="emp-list" id="empList"><div class="empty">Memuat data…</div></div>
         <div class="smallpager">
@@ -347,7 +348,8 @@
     if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
   }
   function render() {
-    const noFace = D.employees.filter((e) => !e.face_key);
+    // karyawan nonaktif gak ikut dihitung "belum punya wajah" (mereka udah gak nagih)
+    const noFace = D.employees.filter((e) => !e.face_key && e.active);
     $('kKota').textContent = D.cities.length;
     $('kToko').textContent = D.stores.length;
     $('kEmp').textContent = D.employees.length;
@@ -387,7 +389,7 @@
         + '<td class="dim">' + (s.address ? esc(s.address) : '<span style="color:var(--dim2)">belum diisi</span>') + '</td>'
         + '<td class="mono dim" style="font-size:11px">' + (+s.lat).toFixed(5) + ', ' + (+s.lon).toFixed(5) + '</td>'
         + '<td><span class="pill p-sky">' + (s.employees_count ?? 0) + '</span></td>'
-        + '<td><button type="button" class="mini" data-editstore="' + s.id + '">Ubah</button></td>';
+        + '<td><button type="button" class="mini" data-editstore="' + s.id + '">Ubah</button> <button type="button" class="mini warn" data-delstore="' + s.id + '">Hapus</button></td>';
       tb.appendChild(tr);
     });
     paintPager('store', 'storePageInfo', 'storePrev', 'storeNext', rowsNow.length, list.length);
@@ -414,8 +416,22 @@
   $('stBg').addEventListener('click', (ev) => { if (ev.target === $('stBg')) closeStore(); });
   $('storeRows').addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-editstore]');
-    if (b) openStore(parseInt(b.dataset.editstore, 10));
+    if (b) return openStore(parseInt(b.dataset.editstore, 10));
+    const d = ev.target.closest('[data-delstore]');
+    if (d) return hapusToko(parseInt(d.dataset.delstore, 10));
   });
+
+  /* hapus toko — cuma jalan kalau toko kosong (tanpa karyawan & riwayat absen) */
+  async function hapusToko(id) {
+    const s = D.stores.find((x) => x.id === id);
+    if (!s) return;
+    if (!confirm('Hapus toko "' + s.name + '"?\nCuma bisa kalau toko kosong: gak ada karyawan & gak ada riwayat absen.')) return;
+    try {
+      const j = await api('/kelola-wajah/toko/' + id + '/hapus', {});
+      toast(j.message);
+      await loadAll();
+    } catch (err) { toast(err.message, 'err'); }
+  }
   $('stSave').onclick = async () => {
     const id = $('stId').value;
     const body = {
@@ -477,11 +493,27 @@
 
   $('storeSearch').oninput = () => { pg.store = 1; renderStores(); };
 
+  /* ---------- nonaktifkan / aktifkan karyawan (resign tanpa hapus riwayat) ---------- */
+  async function toggleEmp(id, active) {
+    const e = D.employees.find((x) => x.id === id);
+    const label = e ? empLabel(e) : 'karyawan ini';
+    if (!confirm((active ? 'Aktifkan ' : 'Nonaktifkan ') + label + '?\n'
+      + (active ? 'Muncul lagi di halaman absen SPG.' : 'Gak muncul lagi di halaman absen SPG, riwayat & wajahnya tetap.'))) return;
+    try {
+      const j = await api('/kelola-wajah/karyawan/' + id + '/aktif', { active });
+      toast(j.message);
+      await loadAll();
+    } catch (err) { toast(err.message, 'err'); }
+  }
+
   function renderEmpList() {
     const q = $('empSearch').value.trim().toLowerCase();
     const f = $('fltStore').value;
+    const a = $('fltActive').value;
     const list = D.employees.filter((e) =>
-      (!q || e.name.toLowerCase().includes(q)) && (!f || String(e.store_id) === f));
+      (!q || e.name.toLowerCase().includes(q))
+      && (!f || String(e.store_id) === f)
+      && (!a || (a === '1' ? e.active : !e.active)));
     const rowsNow = slice(list, 'emp');
     $('cShown').textContent = list.length + ' tampil';
     const box = $('empList');
@@ -489,12 +521,17 @@
     rowsNow.forEach((e) => {
       const row = document.createElement('div');
       row.className = 'emp-row';
-      row.innerHTML = '<div class="av ' + (e.face_key ? '' : 'no') + '">' + esc((e.name[0] || '?').toUpperCase()) + '</div>'
+      row.innerHTML = '<div class="av ' + (e.face_key && e.active ? '' : 'no') + '">' + esc((e.name[0] || '?').toUpperCase()) + '</div>'
         + '<div class="nm"><b>' + esc(e.name) + '</b><span>#' + e.id + ' · ' + esc(storeName(e.store_id) ?? 'tanpa toko')
         + (e.employee_code ? ' · ' + esc(e.employee_code) : '') + '</span></div>'
+        + (e.active ? '' : '<span class="badge b-no">nonaktif</span>')
         + (e.face_key ? '<span class="badge b-ok">wajah ✓</span>' : '<span class="badge b-no">belum</span>')
+        + '<button type="button" class="mini ' + (e.active ? 'warn' : '') + '" data-toggleemp="' + e.id + '" data-active="' + (e.active ? '1' : '0') + '">'
+        + (e.active ? 'Nonaktifkan' : 'Aktifkan') + '</button>'
         + '<button type="button" class="mini" data-editemp="' + e.id + '">Ubah</button>';
       row.onclick = (ev) => {
+        const t = ev.target.closest('[data-toggleemp]');
+        if (t) return toggleEmp(parseInt(t.dataset.toggleemp, 10), t.dataset.active !== '1');
         const b = ev.target.closest('[data-editemp]');
         if (b) return openEmp(parseInt(b.dataset.editemp, 10));
         $('faceEmp').value = String(e.id);
@@ -571,12 +608,13 @@
 
   $('empSearch').oninput = () => { pg.emp = 1; renderEmpList(); };
   $('fltStore').onchange = () => { pg.emp = 1; renderEmpList(); };
+  $('fltActive').onchange = () => { pg.emp = 1; renderEmpList(); };
   $('storePrev').onclick = () => { pg.store--; renderStores(); };
   $('storeNext').onclick = () => { pg.store++; renderStores(); };
   $('empPrev').onclick = () => { pg.emp--; renderEmpList(); };
   $('empNext').onclick = () => { pg.emp++; renderEmpList(); };
-  $('noFacePrev').onclick = () => { pg.noFace--; renderNoFace(D.employees.filter((e) => !e.face_key)); };
-  $('noFaceNext').onclick = () => { pg.noFace++; renderNoFace(D.employees.filter((e) => !e.face_key)); };
+  $('noFacePrev').onclick = () => { pg.noFace--; renderNoFace(D.employees.filter((e) => !e.face_key && e.active)); };
+  $('noFaceNext').onclick = () => { pg.noFace++; renderNoFace(D.employees.filter((e) => !e.face_key && e.active)); };
   /* ---------- foto: file / kamera ---------- */
   function setImage(b64) {
     imageB64 = b64;

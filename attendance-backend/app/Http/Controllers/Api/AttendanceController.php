@@ -43,6 +43,14 @@ class AttendanceController extends Controller
         $employee = Employee::with('store')->find($data['employee_id']);
         $type = $data['type'] ?? 'masuk';
 
+        // Karyawan nonaktif (resign / udah gak jaga toko) gak boleh absen.
+        if (! $employee->active) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Karyawan ini sudah dinonaktifkan — hubungi admin',
+            ], 422);
+        }
+
         // Gate 1 — Face ID (nyala/mati runtime dari sidebar admin; default .env).
         if (Features::on('faceid')) {
             if (empty($data['face_key'])) {

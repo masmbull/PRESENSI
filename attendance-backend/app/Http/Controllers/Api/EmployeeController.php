@@ -18,6 +18,7 @@ class EmployeeController extends Controller
 
         return response()->json(
             Employee::query()
+                ->where('active', true)
                 ->with('store:id,name,city_id')
                 ->withCount('attendances')
                 ->when($data['store_id'] ?? null, fn ($b, $s) => $b->where('store_id', $s))
@@ -26,11 +27,12 @@ class EmployeeController extends Controller
         );
     }
 
-    /** GET /api/employees/no-face — karyawan yang belum punya wajah (cek admin). */
+    /** GET /api/employees/no-face — karyawan aktif yang belum punya wajah (cek admin). */
     public function noFace(): JsonResponse
     {
         return response()->json(
             Employee::query()
+                ->where('active', true)
                 ->whereNull('face_key')
                 ->with('store:id,name,city_id')
                 ->orderBy('name')

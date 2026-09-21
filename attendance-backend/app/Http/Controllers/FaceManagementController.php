@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\City;
 use App\Models\Employee;
 use App\Models\Store;
@@ -154,7 +155,7 @@ class FaceManagementController extends Controller
                 ->with('store.city:id,name')
                 ->orderBy('store_id')
                 ->orderBy('name')
-                ->get(['id', 'name', 'employee_code', 'face_key', 'store_id'])
+                ->get(['id', 'name', 'employee_code', 'face_key', 'active', 'store_id'])
         );
     }
 
@@ -174,6 +175,20 @@ class FaceManagementController extends Controller
             ->whereRaw('lower(name) = ?', [mb_strtolower($name)])
             ->first();
         if ($existing !== null) {
+            // Karyawan yang tadi dinonaktifkan (mis. resign) diaktifkan lagi kalau
+            // namanya didaftarkan ulang — biar gak mentok unique (store_id, name).
+            if (! $existing->active) {
+                $existing->update(['active' => true]);
+
+                return response()->json([
+                    'ok' => true,
+                    'employee' => $existing->load('store.city'),
+                    'existing' => true,
+                    'reactivated' => true,
+                    'message' => 'Karyawan ini sudah terdaftar (tadi nonaktif) — sudah diaktifkan lagi.',
+                ]);
+            }
+
             return response()->json([
                 'ok' => true,
                 'employee' => $existing->load('store.city'),
@@ -223,6 +238,55 @@ class FaceManagementController extends Controller
         ]);
 
         return response()->json(['ok' => true, 'employee' => $employee->fresh()->load('store.city:id,name')]);
+    }
+
+    /**
+     * POST /kelola-wajah/karyawan/{employee}/aktif — nonaktifkan / aktifkan karyawan.
+     * Nonaktif = gak muncul di dropdown absen SPG, tapi riwayat absen & wajahnya tetap.
+     */
+    public function setEmployeeActive(Request $request, Employee $employee): JsonResponse
+    {
+        $data = $request->validate([
+            'active' => 'required|boolean',
+        ]);
+
+        $employee->update(['active' => (bool) $data['active']]);
+
+        return response()->json([
+            'ok' => true,
+            'employee' => $employee->fresh()->load('store.city:id,name'),
+            'message' => $data['active']
+                ? 'Karyawan "'.$employee->name.'" diaktifkan lagi.'
+                : 'Karyawan "'.$employee->name.'" dinonaktifkan — gak muncul lagi di halaman absen SPG.',
+        ]);
+    }
+
+    /**
+     * POST /kelola-wajah/toko/{store}/hapus — hapus toko, tapi cuma kalau bener-bener kosong.
+     * Toko yang masih punya karyawan / riwayat absen ditolak biar laporan tetap utuh.
+     */
+    public function deleteStore(Store $store): JsonResponse
+    {
+        $employees = $store->employees()->count();
+        if ($employees > 0) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Toko "'.$store->name.'" masih punya '.$employees.' karyawan — pindahkan/ubah dulu karyawannya.',
+            ], 422);
+        }
+
+        $absen = Attendance::where('store_id', $store->id)->count();
+        if ($absen > 0) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Toko "'.$store->name.'" punya '.$absen.' riwayat absen — gak dihapus biar laporan tetap utuh.',
+            ], 422);
+        }
+
+        $name = $store->name;
+        $store->delete();
+
+        return response()->json(['ok' => true, 'message' => 'Toko "'.$name.'" dihapus.']);
     }
 
     /**
